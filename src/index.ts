@@ -2,6 +2,12 @@ import express, { Application } from 'express';
 import { config } from 'dotenv';
 import { AppDataSource } from './db/data-source';
 import cors from 'cors';
+import { authRouter } from './routes/auth.route';
+import { branchRouter } from './routes/branch.route';
+import { globalValidation } from './middlewares/global-exception.middleware';
+import { initializeSuperAdmin } from './services/user.service';
+import { companyRouter } from './routes/company.route';
+import { userRouter } from './routes/user.route';
 config();
 const app: Application = express();
 
@@ -15,13 +21,19 @@ app.use(
 app.use(express.json());
 
 AppDataSource.initialize()
-  .then(() => {
+  .then(async () => {
     console.log('Database is started successfully!');
+    await initializeSuperAdmin();
   })
   .catch((err: Error) => {
     console.error(err);
   });
+app.use('/api/auth', authRouter);
+app.use('/api/branch', branchRouter);
+app.use('/api/company', companyRouter);
+app.use('/api/user', userRouter);
 
+app.use(globalValidation);
 app.listen(process.env.PORT_NUMBER, () => {
   console.log('Server has started successfully!');
 });
