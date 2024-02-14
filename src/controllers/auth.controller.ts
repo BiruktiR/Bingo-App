@@ -8,20 +8,23 @@ import {
 } from '../services/token.service';
 import { verify } from 'jsonwebtoken';
 import { TLogin } from '../config/zod-schemas/login.schema';
-import { findByUsername } from '../services/user.service';
+import {
+  findByUsername,
+  findByUsernameForLogin,
+} from '../services/user.service';
 import { isPasswordCorrect } from '../services/auth.service';
 
 export const login = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     let loginData: TLogin = req.body;
-    let user = await findByUsername(loginData.username);
+    let user = await findByUsernameForLogin(loginData.username);
     if (user == null)
-      res.status(400).json({
+      return res.status(400).json({
         status: 400,
         message: 'Username or password is incorrect',
       });
     if (!isPasswordCorrect(loginData.password, user.password))
-      res.status(400).json({
+      return res.status(400).json({
         status: 400,
         message: 'Username or password is incorrect',
       });

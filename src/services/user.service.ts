@@ -22,7 +22,7 @@ export const findByUserId = async (id: string) => {
     },
     where: {
       id: id,
-      role: Not('SUPER_ADMIN'),
+      role: Not('SUPERADMIN'),
     },
   });
 };
@@ -35,7 +35,18 @@ export const findByUsername = async (username: string) => {
     },
     where: {
       username: username,
-      role: Not('SUPER_ADMIN'),
+      role: Not('SUPERADMIN'),
+    },
+  });
+};
+export const findByUsernameForLogin = async (username: string) => {
+  return userRepository.findOne({
+    relations: {
+      branch: true,
+      token: true,
+    },
+    where: {
+      username: username,
     },
   });
 };
@@ -46,7 +57,7 @@ export const findBySuperAdminRole = async () => {
       token: true,
     },
     where: {
-      role: 'SUPER_ADMIN',
+      role: 'SUPERADMIN',
     },
   });
 };
