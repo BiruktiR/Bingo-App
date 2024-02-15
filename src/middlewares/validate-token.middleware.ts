@@ -3,9 +3,9 @@ import { verify } from 'jsonwebtoken';
 import expressAsyncHandler from 'express-async-handler';
 
 export const validateToken = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     if (!req?.headers?.authorization)
-      res.status(400).json({
+      return res.status(400).json({
         status: false,
         message: 'Token is not found!',
       });

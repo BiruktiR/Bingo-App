@@ -60,10 +60,10 @@ export const login = expressAsyncHandler(
 );
 
 export const generateAccessToken = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     let refreshToken: string = req.body.token;
     if (!verifyToken(TOKEN_TYPE.refresh, refreshToken))
-      res.status(401).json({
+      return res.status(401).json({
         status: false,
         message: 'Refresh token is invalid',
       });

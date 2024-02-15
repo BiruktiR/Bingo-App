@@ -22,12 +22,12 @@ export const get = expressAsyncHandler(
 );
 
 export const getById = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     const branchID = req?.params?.branchID;
     const companyID = req?.params?.companyID;
     let data = await findById(branchID, companyID);
     if (data == null)
-      res.status(400).json({
+      return res.status(400).json({
         status: false,
         message: 'Branch is not found!',
       });
@@ -39,21 +39,21 @@ export const getById = expressAsyncHandler(
 );
 
 export const add = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     const branch: TBranch = {
       name: req.body?.name,
     };
     const companyID = req.params?.companyID;
     let company = await findByCompanyId(req.params?.companyID);
     if (company == null)
-      res.status(404).json({
+      return res.status(404).json({
         status: false,
         message: 'Company is not found!',
       });
 
     const data = await findByName(branch.name, companyID);
     if (data !== null)
-      res.status(402).json({
+      return res.status(402).json({
         status: false,
         message: 'Branch already exists!',
       });

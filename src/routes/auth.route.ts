@@ -6,4 +6,4 @@ import { generateAccessToken, login } from '../controllers/auth.controller';
 export const authRouter: Router = express.Router();
 
 authRouter.post('/login', validateSchema(LoginSchema), login);
-authRouter.post('generate-access-token', generateAccessToken);
+authRouter.post('/generate-access-token', generateAccessToken);
