@@ -50,14 +50,15 @@ export const add = expressAsyncHandler(
         status: false,
         message: 'Company is not found!',
       });
-
+    console.log(branch);
     const data = await findByName(branch.name, companyID);
+    console.log(data);
     if (data !== null)
       return res.status(402).json({
         status: false,
         message: 'Branch already exists!',
       });
-    await save(branch, data);
+    await save(branch, company);
     res.status(200).json({
       status: true,
       message: 'Branch is added successfully!',
@@ -66,20 +67,20 @@ export const add = expressAsyncHandler(
 );
 
 export const update = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     const branchID = req?.params?.branchID;
     const companyID = req?.params?.companyID;
 
     const data = await findById(branchID, companyID);
     if (data == null)
-      res.status(404).json({
+      return res.status(404).json({
         status: false,
         message: 'Branch is not found!',
       });
     data.name = req.body.name;
-    let checkUpdateStatus = await checkDupUpdate(data);
+    let checkUpdateStatus = await checkDupUpdate(data, companyID);
     if (checkUpdateStatus != null)
-      res.status(402).json({
+      return res.status(402).json({
         status: false,
         message: 'Branch already exists!',
       });

@@ -3,40 +3,41 @@ import { TBranch } from '../config/zod-schemas/branch.schema';
 import { Not } from 'typeorm';
 import { TCompany } from '../config/zod-schemas/company.schema';
 import { Branch } from '../db/entities/branch.entity';
+import { Company } from 'src/db/entities/company.entity';
 
 const branchRepository = AppDataSource.getRepository(Branch);
 
 export const find = async () => {
-  return branchRepository.find();
+  return branchRepository.find({
+    relations: {
+      company: true,
+    },
+  });
 };
 export const findById = async (id: string, companyID: string) => {
   return branchRepository
     .createQueryBuilder('branches')
-    .where('branch.id=:branchID', { branchID: id })
-    .andWhere('branch.companyId=:companyID', { companyID: companyID })
+    .leftJoinAndSelect('branches.company', 'company')
+    .where('branches.id=:branchID', { branchID: id })
+    .andWhere('branches.companyId=:companyID', { companyID: companyID })
     .getOne();
 };
 export const findByName = async (name: string, companyID: string) => {
-  return branchRepository.findOne({
-    relations: {
-      company: true,
-    },
-    where: {
-      name: name,
-      company: {
-        id: companyID,
-      },
-    },
-  });
-};
-export const checkDupUpdate = async (branch: TBranch) => {
   return branchRepository
-    .createQueryBuilder('branch')
-    .where('branch.id!=:branchID', { branchID: branch.id })
-    .andWhere('branch.name=:branchName', { branchName: branch.name })
+    .createQueryBuilder('branches')
+    .where('branches.companyId=:companyID', { companyID: companyID })
+    .andWhere('branches.name=:branchName', { branchName: name })
     .getOne();
 };
-export const save = async (branch: TBranch, company: TCompany) => {
+export const checkDupUpdate = async (branch: TBranch, companyID: string) => {
+  return branchRepository
+    .createQueryBuilder('branches')
+    .where('branches.id!=:branchID', { branchID: branch.id })
+    .andWhere('branches.name=:branchName', { branchName: branch.name })
+    .andWhere('branches.companyId=:companyID', { companyID: companyID })
+    .getOne();
+};
+export const save = async (branch: TBranch, company: Company) => {
   await branchRepository.save({
     ...branch,
     company: company,
