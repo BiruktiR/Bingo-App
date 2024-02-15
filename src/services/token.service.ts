@@ -25,6 +25,7 @@ export const verifyToken = (type: string, token: string): boolean => {
       : process.env.REFRESH_KEY;
   let status: boolean = false;
   verify(token, tokenKey, (err, user) => {
+    console.log(err);
     status = err ? false : true;
   });
   return status;

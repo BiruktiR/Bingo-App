@@ -83,28 +83,41 @@ export const add = expressAsyncHandler(
   }
 );
 export const update = expressAsyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: any, next: NextFunction) => {
     const userID: string = req?.params?.userID;
-    const branchID: string = res.locals.branchID;
+    //const branchID: string = res.locals.branchID;
     let user = await findByUserId(userID);
 
     if (user.id == null)
-      res.status(404).json({
+      return res.status(404).json({
         status: false,
         message: 'User is not found!',
       });
-    if (user?.branch?.id != branchID)
-      res.status(302).json({
-        status: false,
-        message: 'User does not belong in this branch',
-      });
+    // if (user?.branch?.id != branchID)
+    //   res.status(302).json({
+    //     status: false,
+    //     message: 'User does not belong in this branch',
+    //   });
     if (
-      checkDuplicationUpdate(req.body.username, req.body.phone_number, userID)
-    )
-      res.status(402).json({
+      await checkDuplicationUpdate(
+        req.body.username,
+        req.body.phone_number,
+        userID
+      )
+    ) {
+      console.log(
+        await checkDuplicationUpdate(
+          req.body.username,
+          req.body.phone_number,
+          userID
+        )
+      );
+      return res.status(402).json({
         status: false,
         message: 'User already exists!',
       });
+    }
+
     req.body.password =
       req.body.password == 'not password'
         ? user.password

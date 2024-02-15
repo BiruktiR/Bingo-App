@@ -14,7 +14,9 @@ export const UserSchema: ZodSchema = z.object({
   ),
   username: z.string().min(5),
   password: z.string().min(8),
-  phone_number: z.string().regex(/^2519[0-9]{8}$/),
+  phone_number: z.string().refine((data) => /^\+2519[0-9]{8}$/.test(data), {
+    message: 'Invalid phone number format',
+  }),
   role: z.enum([ROLES.admin, ROLES.cashier]),
   status: z.boolean(),
 });

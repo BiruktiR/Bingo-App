@@ -4,11 +4,14 @@ import expressAsyncHandler from 'express-async-handler';
 
 export const validateSchema = (schema: ZodSchema) => {
   return expressAsyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const result = schema.parse(req.body);
-      if (result?.success) {
-        const formatted = result.error.format();
-        res.status(404).json(formatted);
+    async (req: Request, res: any, next: NextFunction) => {
+      console.log(req.body);
+      const result = schema.safeParse(req.body);
+      if (result?.success == false) {
+        return res.status(404).json({
+          status: false,
+          issues: result.error.format(),
+        });
       }
       next();
     }

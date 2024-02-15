@@ -3,11 +3,12 @@ import expressAsyncHandler from 'express-async-handler';
 import { findByUserId } from '../services/user.service';
 export const addUserPipe = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body.status);
     if (
       req?.body?.status !== undefined &&
       req?.body?.status !== null &&
       req?.body?.status !== 'null' &&
-      typeof req?.body?.status === 'boolean'
+      typeof req?.body?.status !== 'boolean'
     ) {
       req.body.status = req.body.status === 'true' ? true : false;
     }
@@ -23,45 +24,29 @@ export const updateUserPipe = expressAsyncHandler(
         status: false,
         message: 'User is not found!',
       });
-    if (
-      req?.body?.full_name === undefined ||
-      req?.body?.full_name === null ||
-      req?.body?.full_name === 'null'
-    )
+    if (req?.body?.full_name === undefined || req?.body?.full_name == null)
       req.body.full_name = user.full_name;
-    if (
-      req?.body?.username === undefined ||
-      req?.body?.username === null ||
-      req?.body?.username === 'null'
-    )
+    if (req?.body?.username === undefined || req?.body?.username == null)
       req.body.username = user.username;
-    if (
-      req?.body?.password === undefined ||
-      req?.body?.password === null ||
-      req?.body?.password === 'null'
-    )
+    if (req?.body?.password === undefined || req?.body?.password == null)
       req.body.password = 'not password';
     if (
       req?.body?.phone_number === undefined ||
-      req?.body?.phone_number === null ||
-      req?.body?.phone_number === 'null'
+      req?.body?.phone_number == null
     )
       req.body.phone_number = user.phone_number;
-    if (
-      req?.body?.role === undefined ||
-      req?.body?.role === null ||
-      req?.body?.role === 'null'
-    ) {
+    if (req?.body?.role === undefined || req?.body?.role == null) {
       req.body.role = user.role;
     }
-    if (
-      req?.body?.status === undefined ||
-      req?.body?.status === null ||
-      req?.body?.status === 'null'
-    ) {
+    if (req?.body?.status === undefined || req?.body?.status == null) {
       req.body.status = user.status;
     } else {
-      req.body.status = req.body.status === 'true' ? true : false;
+      req.body.status =
+        typeof req.body.status == 'boolean'
+          ? req.body.status
+          : req.body.status === 'true'
+          ? true
+          : false;
     }
     next();
   }
