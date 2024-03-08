@@ -22,3 +22,25 @@ export const UserSchema: ZodSchema = z.object({
 });
 
 export type TUser = z.infer<typeof UserSchema>;
+export const FindUserSchema: ZodSchema = z.object({
+  full_name: z.string().optional(),
+  username: z.string().optional(),
+  phone_number: z.string().optional(),
+  companyID: z.string().min(32).optional(),
+  branchID: z.string().min(32).optional(),
+  id: z.string().min(32).optional(),
+  page: z
+    .string()
+    .refine((data) => !isNaN(Number(data)), {
+      message: 'Input must be a valid number',
+    })
+    .optional(),
+  limit: z
+    .string()
+    .refine((data) => !isNaN(Number(data)), {
+      message: 'Input must be a valid number',
+    })
+    .optional(),
+});
+
+export type TFindUserSchema = z.infer<typeof FindUserSchema>;

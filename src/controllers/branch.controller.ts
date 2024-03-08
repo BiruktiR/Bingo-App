@@ -8,15 +8,19 @@ import {
   checkDupUpdate,
   modify,
 } from '../services/branch.service';
-import { TBranch } from '../config/zod-schemas/branch.schema';
+import {
+  TBranch,
+  TFindBranchSchema,
+} from '../config/zod-schemas/branch.schema';
 import { findByCompanyId } from '../services/company.service';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    let data = await find();
+    let filters: TFindBranchSchema = req.query;
+    let data = await find(filters);
     res.status(200).json({
       status: true,
-      data,
+      ...data,
     });
   }
 );
@@ -24,8 +28,8 @@ export const get = expressAsyncHandler(
 export const getById = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
     const branchID = req?.params?.branchID;
-    const companyID = req?.params?.companyID;
-    let data = await findById(branchID, companyID);
+    // const companyID = req?.params?.companyID;
+    let data = await findById(branchID);
     if (data == null)
       return res.status(400).json({
         status: false,
@@ -69,22 +73,21 @@ export const add = expressAsyncHandler(
 export const update = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
     const branchID = req?.params?.branchID;
-    const companyID = req?.params?.companyID;
 
-    const data = await findById(branchID, companyID);
+    const data = await findById(branchID);
     if (data == null)
       return res.status(404).json({
         status: false,
         message: 'Branch is not found!',
       });
     data.name = req.body.name;
-    let checkUpdateStatus = await checkDupUpdate(data, companyID);
+    let checkUpdateStatus = await checkDupUpdate(data, data.company.id);
     if (checkUpdateStatus != null)
       return res.status(402).json({
         status: false,
         message: 'Branch already exists!',
       });
-    let branchData = await modify(data, companyID);
+    let branchData = await modify(data, data.company.id);
     res.status(200).json({
       status: true,
       message: 'Branch is updated successfully!',

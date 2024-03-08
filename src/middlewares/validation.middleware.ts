@@ -1,11 +1,13 @@
 import { z, ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import { validationType } from '../config/other-types/Enums';
 
-export const validateSchema = (schema: ZodSchema) => {
+export const validateSchema = (schema: ZodSchema, type: string) => {
   return expressAsyncHandler(
     async (req: Request, res: any, next: NextFunction) => {
-      console.log(req.body);
+      const data = type == validationType.body ? req.body : req.query;
+
       const result = schema.safeParse(req.body);
       if (result?.success == false) {
         return res.status(404).json({

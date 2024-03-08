@@ -1,26 +1,57 @@
 import { AppDataSource } from '../db/data-source';
-import { TBranch } from '../config/zod-schemas/branch.schema';
+import {
+  TBranch,
+  TFindBranchSchema,
+} from '../config/zod-schemas/branch.schema';
 import { Not } from 'typeorm';
 import { TCompany } from '../config/zod-schemas/company.schema';
 import { Branch } from '../db/entities/branch.entity';
-import { Company } from 'src/db/entities/company.entity';
+import { Company } from '../db/entities/company.entity';
+import { MetadataType } from '../config/other-types/metadata';
+import { generateMetadata } from '../config/generate-metadata';
 
 const branchRepository = AppDataSource.getRepository(Branch);
 
-export const find = async () => {
-  return branchRepository.find({
-    relations: {
-      company: true,
-    },
-  });
-};
-export const findById = async (id: string, companyID: string) => {
-  return branchRepository
+export const find = async (filters: TFindBranchSchema) => {
+  let branch = await branchRepository
     .createQueryBuilder('branches')
-    .leftJoinAndSelect('branches.company', 'company')
-    .where('branches.id=:branchID', { branchID: id })
-    .andWhere('branches.companyId=:companyID', { companyID: companyID })
-    .getOne();
+    .leftJoinAndSelect('branches.company', 'company');
+  if (filters?.id)
+    await branch.andWhere('branches.id=:branchID', { branchID: filters.id });
+  if (filters?.name)
+    await branch.andWhere('branches.name like :branchName', {
+      branchName: `%${filters.name}%`,
+    });
+  if (filters?.companyID)
+    await branch.andWhere('company.id=:companyID', {
+      companyID: filters.companyID,
+    });
+  let page: number = !Number.isNaN(parseInt(filters.page))
+    ? parseInt(filters.page)
+    : 1;
+  let limit: number = !Number.isNaN(parseInt(filters.limit))
+    ? parseInt(filters.limit)
+    : 20;
+  let offset: number = limit * (page - 1);
+
+  await branch.skip(offset).take(limit);
+  let count: number = await branch.getCount();
+
+  const metadata: MetadataType = await generateMetadata(page, limit, count);
+  return {
+    metadata: metadata,
+    data: await branch.getMany(),
+  };
+};
+export const findById = async (id: string) => {
+  return (
+    branchRepository
+      .createQueryBuilder('branches')
+      .leftJoinAndSelect('branches.company', 'company')
+      .where('branches.id=:branchID', { branchID: id })
+      // .andWhere('branches.companyId=:companyID', { companyID: companyID })
+      .getOne()
+  );
 };
 export const findByName = async (name: string, companyID: string) => {
   return branchRepository
@@ -46,5 +77,5 @@ export const save = async (branch: TBranch, company: Company) => {
 
 export const modify = async (branch: TBranch, companyID: string) => {
   await branchRepository.update({ id: branch.id }, branch);
-  return findById(branch.id, companyID);
+  return findById(branch.id);
 };

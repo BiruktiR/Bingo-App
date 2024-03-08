@@ -8,14 +8,19 @@ import {
   checkDupUpdate,
   modify,
 } from '../services/company.service';
-import { TCompany } from '../config/zod-schemas/company.schema';
+import {
+  TCompany,
+  TFindCompanySchema,
+} from '../config/zod-schemas/company.schema';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    let data = await find();
+    let filters: TFindCompanySchema = req?.query;
+    let data = await find(filters);
+
     res.status(200).json({
       status: true,
-      data,
+      ...data,
     });
   }
 );

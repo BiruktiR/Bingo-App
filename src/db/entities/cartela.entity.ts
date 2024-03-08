@@ -9,8 +9,8 @@ import { Branch } from './branch.entity';
 
 @Entity('cartelas')
 export class Cartela {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @ManyToOne(() => Branch, (branch) => branch.company)
   @JoinColumn()

@@ -8,7 +8,10 @@ export enum activeStatus {
   active = 'Active',
   inactive = 'Inactive',
 }
-
+export enum validationType {
+  body = 'BODY',
+  query = 'QUERY',
+}
 export enum TOKEN_TYPE {
   access = 'ACCESS',
   refresh = 'REFRESH',

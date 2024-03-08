@@ -8,6 +8,8 @@ import { globalValidation } from './middlewares/global-exception.middleware';
 import { initializeSuperAdmin } from './services/user.service';
 import { companyRouter } from './routes/company.route';
 import { userRouter } from './routes/user.route';
+import { cartelaRouter } from './routes/cartela.route';
+
 config();
 const app: Application = express();
 
@@ -32,6 +34,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/branch', branchRouter);
 app.use('/api/company', companyRouter);
 app.use('/api/user', userRouter);
+app.use('/api/cartela', cartelaRouter);
 
 app.use(globalValidation);
 app.listen(process.env.PORT_NUMBER, () => {

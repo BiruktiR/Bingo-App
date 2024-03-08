@@ -1,9 +1,9 @@
 import express, { Router } from 'express';
 import { validateSchema } from '../middlewares/validation.middleware';
-import { UserSchema } from '../config/zod-schemas/user.schema';
+import { FindUserSchema, UserSchema } from '../config/zod-schemas/user.schema';
 import { validateToken } from '../middlewares/validate-token.middleware';
 import { validateRole } from '../guards/role.guard';
-import { GUARD_TYPES } from '../config/other-types/Enums';
+import { GUARD_TYPES, validationType } from '../config/other-types/Enums';
 import { addUserPipe, updateUserPipe } from '../pipes/user.pipe';
 import { add, get, getById, update } from '../controllers/user.controller';
 
@@ -12,6 +12,7 @@ userRouter.get(
   '',
   validateToken,
   validateRole(GUARD_TYPES.superAdminAndAdmin),
+  validateSchema(FindUserSchema, validationType.query),
   get
 );
 userRouter.get(
@@ -25,7 +26,7 @@ userRouter.post(
   validateToken,
   validateRole(GUARD_TYPES.superAdminAndAdmin),
   addUserPipe,
-  validateSchema(UserSchema),
+  validateSchema(UserSchema, validationType.body),
   add
 );
 userRouter.put(
@@ -33,6 +34,6 @@ userRouter.put(
   validateToken,
   validateRole(GUARD_TYPES.superAdminAndAdmin),
   updateUserPipe,
-  validateSchema(UserSchema),
+  validateSchema(UserSchema, validationType.body),
   update
 );
