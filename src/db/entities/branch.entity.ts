@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Company } from './company.entity';
+import { Game } from './game.entity';
 
 @Entity('branches')
 export class Branch {
@@ -17,11 +18,15 @@ export class Branch {
   @Column()
   name: string;
 
-  @OneToMany(() => User, (user) => user.branch)
+  @OneToMany(() => User, (user) => user.branch, { cascade: true })
   @JoinColumn()
   users: User[];
 
   @ManyToOne(() => Company, (company) => company.branches)
   @JoinColumn()
   company: Company;
+
+  @OneToMany(() => Game, (game) => game.branch, { cascade: true })
+  @JoinColumn()
+  games: Game[];
 }

@@ -8,6 +8,8 @@ import { Branch } from '../db/entities/branch.entity';
 import { ROLES } from '../config/other-types/Enums';
 import { MetadataType } from '../config/other-types/metadata';
 import { generateMetadata } from '../config/generate-metadata';
+import { number } from 'zod';
+import { convertToBingoArray } from '../config/util-functions';
 
 const cartelaRepository = AppDataSource.getRepository(Cartela);
 
@@ -48,7 +50,7 @@ export const findCartela = async (
       return {
         id: x.id,
         branch: x.branch,
-        board: JSON.parse(x.board),
+        board: convertToBingoArray(JSON.parse(x.board)),
       };
     }),
   };
@@ -73,8 +75,11 @@ export const findCartelaById = async (
     board: JSON.parse(cartela.board),
   };
 };
-export const checkAddDuplicate = async (board: TCartela, branchID: string) => {
-  const boardString: string = JSON.stringify(board.board);
+export const checkAddDuplicate = async (
+  board: number[][],
+  branchID: string
+) => {
+  const boardString: string = JSON.stringify(board);
   const cartela = await cartelaRepository
     .createQueryBuilder('cartelas')
     .where('cartelas.branchId=:branchID', { branchID: branchID })

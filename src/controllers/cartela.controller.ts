@@ -11,7 +11,8 @@ import {
 } from '../services/cartela.service';
 import { findById } from '../services/branch.service';
 import { findByUserId } from '../services/user.service';
-import { TFindCartelaSchema } from 'src/config/zod-schemas/cartela.schema';
+import { TFindCartelaSchema } from '../config/zod-schemas/cartela.schema';
+import { convertToBingoArray } from '../config/util-functions';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +41,7 @@ export const getById = expressAsyncHandler(
     const cartela = await findCartelaById(id, role, user?.branch?.id);
     res.status(200).json({
       status: true,
-      data: cartela,
+      data: cartela !== null ? convertToBingoArray(cartela.board) : cartela,
     });
   }
 );
@@ -59,6 +60,28 @@ export const save = expressAsyncHandler(
     res.status(200).json({
       status: true,
       message: 'Cartela is added successfully!',
+    });
+  }
+);
+export const saveMultiple = expressAsyncHandler(
+  async (req: Request, res: any, next: NextFunction) => {
+    let cartela = req.body;
+    const branch = res.locals.branch;
+
+    for (let x = 0; x < cartela.board.length; x++) {
+      if (!(await checkAddDuplicate(cartela.board[x], branch.id)))
+        return res.status(302).json({
+          status: false,
+          message: 'Board already exists!',
+        });
+    }
+    for (let x = 0; x < cartela.board.length; x++) {
+      await add(cartela.board[x], branch);
+    }
+
+    res.status(200).json({
+      status: true,
+      message: 'Cartelas are added successfully!',
     });
   }
 );

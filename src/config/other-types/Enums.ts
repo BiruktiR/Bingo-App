@@ -22,3 +22,7 @@ export enum GUARD_TYPES {
   superAdminAndAdmin = 'SUPER_ADMIN_AND_ADMIN',
   all = 'ALL',
 }
+export enum RANDOM_TYPE {
+  raw = 'RAW',
+  custom = 'CUSTOM',
+}

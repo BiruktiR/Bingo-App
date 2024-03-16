@@ -4,10 +4,15 @@ import { LoginSchema } from '../config/zod-schemas/login.schema';
 import { validateToken } from '../middlewares/validate-token.middleware';
 import { validateRole } from '../guards/role.guard';
 import { GUARD_TYPES, validationType } from '../config/other-types/Enums';
-import { addCartelaPipe, updateCartelaPipe } from '../pipes/cartela.pipe';
+import {
+  addCartelaPipe,
+  addMultipleCartelaPipe,
+  updateCartelaPipe,
+} from '../pipes/cartela.pipe';
 import {
   CartelaSchema,
   FindCartelaSchema,
+  MultipleCartelaSchema,
 } from '../config/zod-schemas/cartela.schema';
 import {
   get,
@@ -15,6 +20,7 @@ import {
   save,
   update,
   deleteCartela,
+  saveMultiple,
 } from '../controllers/cartela.controller';
 
 export const cartelaRouter: Router = express.Router();
@@ -30,6 +36,15 @@ cartelaRouter.get(
   validateToken,
   validateRole(GUARD_TYPES.all),
   getById
+);
+
+cartelaRouter.post(
+  '/many/:branchID/:companyID',
+  validateToken,
+  validateRole(GUARD_TYPES.superAdminAndAdmin),
+  addMultipleCartelaPipe,
+  validateSchema(MultipleCartelaSchema, validationType.body),
+  saveMultiple
 );
 cartelaRouter.post(
   '/:branchID/:companyID',

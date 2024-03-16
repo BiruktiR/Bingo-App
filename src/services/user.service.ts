@@ -90,6 +90,17 @@ export const findByUserId = async (id: string) => {
     },
   });
 };
+export const findAllUsersById = async (id: string) => {
+  return userRepository.findOne({
+    relations: {
+      branch: true,
+      token: true,
+    },
+    where: {
+      id: id,
+    },
+  });
+};
 export const findByUserIdRoleBased = async (
   id: string,
   role: string,

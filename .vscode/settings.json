@@ -1,0 +1,9 @@
+{
+  "editor.fontSize": 15,
+  "screencastMode.fontSize": 56,
+  "scm.inputFontSize": 12,
+  "debug.console.fontSize": 12,
+  "terminal.integrated.fontSize": 12,
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "'Cascadia Code'"
+}
