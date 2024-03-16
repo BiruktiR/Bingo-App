@@ -4,8 +4,7 @@ import { findById } from '../services/branch.service';
 export const updateBranchPipe = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
     let branchId = req?.params?.branchID;
-    let companyId = req?.params?.companyID;
-    const branch = await findById(branchId, companyId);
+    const branch = await findById(branchId);
     if (branch == null)
       return res.status(404).json({
         status: false,
