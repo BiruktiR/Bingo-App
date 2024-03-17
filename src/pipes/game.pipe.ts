@@ -1,23 +1,22 @@
 import express, { Request, Response, NextFunction } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import moment from 'moment-timezone';
+import { TBingo } from '../config/other-types/match';
 export const AddGamePipe = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
-    if (req?.body?.pattern !== undefined && req?.body?.pattern !== null)
+    if (req?.body?.pattern !== undefined && req?.body?.pattern !== null) {
       req.body.pattern = JSON.parse(req.body.pattern);
-    // if (
-    //   req?.body?.date !== undefined &&
-    //   req?.body?.date !== null &&
-    //   Date.parse(req?.body?.date)
-    // ) {
-    //   const date = new Date();
+      if (req.body.pattern?.length > 2) {
+        if (req.body.pattern[2]?.N) {
+          req.body.pattern[2].N = 0;
+        }
+      }
+      let pattern: TBingo[] = req.body.pattern;
+      if (Array.isArray(req.body.pattern)) {
+        req.body.pattern = pattern.map((obj) => Object.values(obj));
+      }
+    }
 
-    //   // Convert it to UTC+3 timezone
-    //   const convertedDate = moment(date).tz('Europe/Moscow'); // UTC+3 is Moscow timezone
-
-    //   // Format the date as Year-Month-Day
-    //   const formattedDate = convertedDate.format('YYYY-MM-DD');
-    // }
     if (req?.body?.type !== undefined && req?.body?.type !== null)
       req.body.type = parseInt(req.body.type);
     if (req?.body?.bet !== undefined && req?.body?.bet !== null)
@@ -30,8 +29,6 @@ export const AddGamePipe = expressAsyncHandler(
 );
 export const FindGamePipe = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
-    if (req?.body?.pattern !== undefined && req?.body?.pattern !== null)
-      req.body.pattern = JSON.parse(req.body.pattern);
     if (
       req?.body?.date !== undefined &&
       req?.body?.date !== null &&

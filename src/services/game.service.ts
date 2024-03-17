@@ -10,7 +10,10 @@ import { TFindGameSchema } from '../config/zod-schemas/game.schema';
 import { MetadataType } from '../config/other-types/metadata';
 import { generateMetadata } from '../config/generate-metadata';
 import { TMatch } from '../config/other-types/match';
-import { convertTo2DArray } from '../config/util-functions';
+import {
+  convertTo2DArray,
+  convertToBingoArray,
+} from '../config/util-functions';
 
 const gameRepository = AppDataSource.getRepository(Game);
 const gameCartelaRepository = AppDataSource.getRepository(GameCartela);
@@ -77,7 +80,7 @@ export const findGame = async (
       return {
         id: data.id,
         called_numbers: JSON.parse(data.called_numbers),
-        pattern: JSON.parse(data.pattern),
+        pattern: convertToBingoArray(JSON.parse(data.pattern)),
         bet: data.bet,
         branch: data.branch,
         date: data.date,
@@ -87,7 +90,7 @@ export const findGame = async (
             id: y.id,
             cartela: y.cartela,
             game: y.game,
-            matched_board: JSON.parse(y.matched_board),
+            matched_board: convertToBingoArray(JSON.parse(y.matched_board)),
             attempts: y.attempts,
             is_fully_matched: y.is_fully_matched,
           };

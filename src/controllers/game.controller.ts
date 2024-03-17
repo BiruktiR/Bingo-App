@@ -6,7 +6,11 @@ import { findAllUsersById } from '../services/user.service';
 import { findById } from '../services/branch.service';
 import { Cartela } from '../db/entities/cartela.entity';
 import { findCartelaById } from '../services/cartela.service';
-import { findIndexesOfNumber, getDate } from '../config/util-functions';
+import {
+  convertToBingoArray,
+  findIndexesOfNumber,
+  getDate,
+} from '../config/util-functions';
 import {
   addGame,
   addGameCartela,
@@ -46,6 +50,19 @@ export const getById = expressAsyncHandler(
       if (role !== ROLES.superAdmin && user.branch.id !== data.branch.id) {
         data = null;
       }
+    }
+    if (data !== null) {
+      data.game_cartelas.map((y) => {
+        return {
+          id: y.id,
+          cartela: y.cartela,
+          game: y.game,
+          matched_board: convertToBingoArray(y.matched_board),
+          attempts: y.attempts,
+          is_fully_matched: y.is_fully_matched,
+        };
+      });
+      data.pattern = convertToBingoArray(data.pattern);
     }
     res.status(200).json({
       status: true,
@@ -194,12 +211,31 @@ export const checkWinner = expressAsyncHandler(
       let winner_cartela = await findAndRemoveObjectById(winners, cartelaID);
       isWinner = winner_cartela === null ? false : true;
     }
+
     res.status(200).json({
       status: true,
       data: {
-        game: gameCartela,
+        game: {
+          id: gameCartela.id,
+          cartela: gameCartela.cartela,
+          attempts: gameCartela.attempts,
+          game: gameCartela.game,
+          is_fully_matched: gameCartela.is_fully_matched,
+          matched_board: convertToBingoArray(
+            JSON.parse(gameCartela.matched_board)
+          ),
+        },
         is_winner: isWinner,
-        other_winners: winners,
+        other_winners: winners.map((x) => {
+          return {
+            id: x.id,
+            cartela: x.cartela,
+            game: x.game,
+            attempts: x.attempts,
+            matched_board: convertToBingoArray(JSON.parse(x.matched_board)),
+            is_fully_matched: x.is_fully_matched,
+          };
+        }),
       },
     });
   }
@@ -238,7 +274,7 @@ export const disqualify = expressAsyncHandler(
       if (game.branch.id !== user.branch.id) {
         return res.status(401).json({
           status: false,
-          message: 'Not allowed to update game of other branch!',
+          message: 'Not allowed to delete game cartelas of other branch!',
         });
       }
     }
@@ -264,7 +300,7 @@ export const deleteGame = expressAsyncHandler(
       if (game.branch.id !== user.branch.id) {
         return res.status(401).json({
           status: false,
-          message: 'Not allowed to update game of other branch!',
+          message: 'Not allowed to delete game of other branch!',
         });
       }
     }
