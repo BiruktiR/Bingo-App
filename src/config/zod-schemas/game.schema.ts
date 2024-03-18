@@ -1,17 +1,34 @@
 import { ZodSchema, z } from 'zod';
-const patternRow = z
-  .array(z.literal(0).or(z.literal(1)))
-  .refine((data) => data.length === 5, {
-    message: 'Each row should have exactly 5 elements.',
-  })
-  .refine((data) => data[1] !== 1, {
-    message: 'The value at position [2, 2] should always be 0.',
-  });
+const RowSchema = z.array(z.number().min(0).max(1)).length(5);
+
+// Define the schema for the entire 5x5 array
+export const MatrixSchema = z
+  .array(RowSchema)
+  .length(5)
+  .refine(
+    (matrix) => {
+      // Check if there is at least one instance of 1 in the matrix
+      const oneFound = matrix.some((row) => row.includes(1));
+      // Check if the middle center is always 0
+      const middleCenter = matrix[2][2] === 0;
+      return oneFound && middleCenter;
+    },
+    {
+      message:
+        'At least one instance of 1 is required, and the middle center should always be 0',
+    }
+  );
+// const patternRow = z
+//   .array(z.literal(0).or(z.literal(1)))
+//   .refine((data) => data.length === 5, {
+//     message: 'Each row should have exactly 5 elements.',
+//   })
+//   .refine((data) => data[1] !== 1, {
+//     message: 'The value at position [2, 2] should always be 0.',
+//   });
 
 export const AddGameSchema: ZodSchema = z.object({
-  pattern: z.array(patternRow).refine((data) => data.length === 5, {
-    message: 'The matrix should have exactly 5 rows.',
-  }),
+  pattern: MatrixSchema,
   type: z.number(),
   bet: z.number(),
   cartelas: z.array(z.number()).refine(
@@ -71,6 +88,6 @@ export const FindGameSchema: ZodSchema = z.object({
 });
 export type TFindGameSchema = z.infer<typeof FindGameSchema>;
 export const CheckGameSchema: ZodSchema = z.object({
-  steps: z.number().min(1),
+  steps: z.number().min(1).max(75),
 });
 export type TCheckGameSchema = z.infer<typeof AddGameSchema>;

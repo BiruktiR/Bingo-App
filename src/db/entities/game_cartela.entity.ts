@@ -27,7 +27,9 @@ export class GameCartela {
   @Column()
   attempts: number;
 
-  @Column()
+  @Column({
+    type: 'text',
+  })
   matched_board: string;
   @Column()
   is_fully_matched: boolean;

@@ -65,7 +65,7 @@ export const findCartelaById = async (
     .leftJoinAndSelect('cartelas.branch', 'branch')
     .where('cartelas.id=:cartelaID', { cartelaID: id });
   if (role !== ROLES.superAdmin)
-    await data.where('branch.id=:branchID', { branchID: branchID });
+    await data.andWhere('branch.id=:branchID', { branchID: branchID });
 
   const cartela = await data.getOne();
   if (cartela == null) return null;

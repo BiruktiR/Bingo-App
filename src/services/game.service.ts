@@ -1,4 +1,4 @@
-import { shuffle, range, slice, attempt } from 'lodash';
+import { shuffle, range, slice, attempt, random } from 'lodash';
 import { RANDOM_TYPE, ROLES } from '../config/other-types/Enums';
 import { Cartela } from '../db/entities/cartela.entity';
 import { Branch } from '../db/entities/branch.entity';
@@ -90,7 +90,10 @@ export const findGame = async (
             id: y.id,
             cartela: y.cartela,
             game: y.game,
-            matched_board: convertToBingoArray(JSON.parse(y.matched_board)),
+            matched_board:
+              y.matched_board !== ''
+                ? convertToBingoArray(JSON.parse(y.matched_board))
+                : '',
             attempts: y.attempts,
             is_fully_matched: y.is_fully_matched,
           };
@@ -112,29 +115,30 @@ export const findGameById = async (id: string) => {
     .leftJoinAndSelect('games.player', 'player')
     .where('games.id=:gameID', { gameID: id })
     .getOne();
+  if (game == null) return null;
   let initialEarning: number = game.bet * game.game_cartelas.length;
   let percentageCut: number = initialEarning * ((game.type * 5) / 100);
   let { called_numbers, pattern } = game;
-  if (game !== null)
-    return {
-      ...game,
-      game_cartelas: game.game_cartelas.map((y) => {
-        return {
-          id: y.id,
-          cartela: y.cartela,
-          game: y.game,
-          matched_board: JSON.parse(y.matched_board),
-          attempts: y.attempts,
-          is_fully_matched: y.is_fully_matched,
-        };
-      }),
-      called_numbers: JSON.parse(called_numbers),
-      pattern: JSON.parse(pattern),
-      total_winning: initialEarning,
-      cut: percentageCut,
-      player_winning: initialEarning - percentageCut,
-    };
-  return game;
+
+  return {
+    ...game,
+    game_cartelas: game.game_cartelas.map((y) => {
+      return {
+        id: y.id,
+        cartela: y.cartela,
+        game: y.game,
+        matched_board:
+          y.matched_board !== '' ? JSON.parse(y.matched_board) : null,
+        attempts: y.attempts,
+        is_fully_matched: y.is_fully_matched,
+      };
+    }),
+    called_numbers: JSON.parse(called_numbers),
+    pattern: JSON.parse(pattern),
+    total_winning: initialEarning,
+    cut: percentageCut,
+    player_winning: initialEarning - percentageCut,
+  };
 };
 export const findGameRaw = async (id: string) => {
   let game = await gameRepository
@@ -182,20 +186,22 @@ export const getBingoAttempts = async (
       isMatched: false,
     };
   });
+
   let isFullyMatched: boolean = false;
 
   let attempts: number = 0;
   let numberOfPatternsMatched: number = 0;
   for (let x = 0; x < steps; x++) {
     let index = board.indexOf(randomNumbers[x]);
-    if (index == -1 || numberOfPatternsMatched < indexArray.length - 1) {
+
+    if (index == -1 && numberOfPatternsMatched < indexArray.length - 1) {
       attempts++;
       continue;
     } else if (index !== -1) {
       matchBoard[index].isMatched = true;
       if (indexArray.includes(index)) {
         numberOfPatternsMatched++;
-        if (numberOfPatternsMatched == indexArray.length - 1) {
+        if (numberOfPatternsMatched == indexArray.length) {
           isFullyMatched = true;
           x = randomNumbers.length + 1;
         }
@@ -203,6 +209,7 @@ export const getBingoAttempts = async (
     }
     attempts++;
   }
+
   return {
     attempts: attempts,
     matchBoard: await convertTo2DArray(matchBoard),
@@ -218,25 +225,28 @@ export const addGame = async (
   user: User,
   bet: number
 ) => {
-  let game = new Game();
-  game.called_numbers = JSON.stringify(randomNumbers);
-  game.pattern = JSON.stringify(pattern);
-  game.branch = branch;
-  game.date = generatedDate;
-  game.player = user;
-  game.type = type;
-  game.bet = bet;
+  let game = await gameRepository.create({
+    called_numbers: JSON.stringify(randomNumbers),
+    pattern: JSON.stringify(pattern),
+    branch: branch,
+    date: generatedDate,
+    player: user,
+    type: type,
+    bet: bet,
+  });
+
   await gameRepository.save(game);
   return game;
 };
 export const addGameCartela = async (game: Game, cartela: Cartela) => {
-  await gameCartelaRepository.save({
+  let gameCartela = gameCartelaRepository.create({
     cartela: cartela,
     game: game,
     attempts: 0,
     matched_board: '',
     is_fully_matched: false,
   });
+  await gameCartelaRepository.save(gameCartela);
 };
 export const findWinners = async (
   array: {

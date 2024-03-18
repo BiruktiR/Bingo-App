@@ -25,6 +25,7 @@ export const convertTo2DArray = async (arr: TMatch[]) => {
   return newArr;
 };
 export const convertToBingoArray = (arr: number[][]) => {
+  if (arr == null) return null;
   return arr.map((row) => ({
     B: row[0],
     I: row[1],

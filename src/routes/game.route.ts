@@ -36,6 +36,14 @@ gameRouter.get(
   getById
 );
 gameRouter.post(
+  '/check-winner/:cartelaID/:gameID',
+  validateToken,
+  validateRole(GUARD_TYPES.all),
+  CheckGamePipe,
+  validateSchema(CheckGameSchema, validationType.body),
+  checkWinner
+);
+gameRouter.post(
   '/:branchID',
   validateToken,
   validateRole(GUARD_TYPES.all),
@@ -44,17 +52,8 @@ gameRouter.post(
   add
 );
 
-gameRouter.post(
-  '/check-winner/:cartelaID/:gameID',
-  validateToken,
-  validateRole(GUARD_TYPES.all),
-  CheckGamePipe,
-  validateSchema(CheckGameSchema, validationType.body),
-  checkWinner
-);
-
 gameRouter.delete(
-  'disqualify/:cartelaID/:gameID',
+  '/disqualify/:cartelaID/:gameID',
   validateToken,
   validateRole(GUARD_TYPES.all),
   disqualify

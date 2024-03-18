@@ -6,6 +6,7 @@ export const AddGamePipe = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
     if (req?.body?.pattern !== undefined && req?.body?.pattern !== null) {
       req.body.pattern = JSON.parse(req.body.pattern);
+      console.log(req.body.pattern);
       if (req.body.pattern?.length > 2) {
         if (req.body.pattern[2]?.N) {
           req.body.pattern[2].N = 0;
@@ -15,6 +16,7 @@ export const AddGamePipe = expressAsyncHandler(
       if (Array.isArray(req.body.pattern)) {
         req.body.pattern = pattern.map((obj) => Object.values(obj));
       }
+      console.log(req.body.pattern);
     }
 
     if (req?.body?.type !== undefined && req?.body?.type !== null)

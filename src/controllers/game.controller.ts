@@ -36,6 +36,19 @@ export const get = expressAsyncHandler(
     res.status(200).json({
       status: true,
       ...data,
+      total_winnings: data.data.reduce((acc, obj) => {
+        if ('total_winning' in obj) {
+          acc += obj.total_winning;
+        }
+        return acc;
+      }, 0),
+      total_cuts: data.data.reduce((acc, obj) => {
+        if ('cut' in obj) {
+          acc += obj.cut;
+        }
+        return acc;
+      }, 0),
+      transactions: data.data.length,
     });
   }
 );
@@ -123,16 +136,31 @@ export const add = expressAsyncHandler(
       user,
       game.bet
     );
-    cartela.forEach(async (x) => {
-      // let { attempts, matchBoard } = await getBingoAttempts(
-      //   indexArray,
-      //   randomNumbers,
-      //   x
-      // );
-      await addGameCartela(savedGame, x);
-    });
+    for (let x = 0; x < cartela.length; x++) {
+      await addGameCartela(savedGame, cartela[x]);
+    }
+    // cartela.forEach(async (x) => {
+    //   // let { attempts, matchBoard } = await getBingoAttempts(
+    //   //   indexArray,
+    //   //   randomNumbers,
+    //   //   x
+    //   // );
+    //   await addGameCartela(savedGame, x);
+    // });
     let finalOutput = await findGameById(savedGame.id);
-
+    if (finalOutput !== null) {
+      finalOutput.game_cartelas.map((y) => {
+        return {
+          id: y.id,
+          cartela: y.cartela,
+          game: y.game,
+          matched_board: convertToBingoArray(y.matched_board),
+          attempts: y.attempts,
+          is_fully_matched: y.is_fully_matched,
+        };
+      });
+      finalOutput.pattern = convertToBingoArray(finalOutput.pattern);
+    }
     res.status(200).json({
       status: true,
       message: 'Game is added successfully!',
@@ -161,7 +189,7 @@ export const checkWinner = expressAsyncHandler(
         status: false,
         message: 'Game is not found!',
       });
-    let gameCartela: GameCartela = null;
+    let gameCartela = null;
     for (let x = 0; x < game.game_cartelas.length; x++) {
       if (cartelaID === game.game_cartelas[x].cartela.id) {
         gameCartela = game.game_cartelas[x];
@@ -173,6 +201,7 @@ export const checkWinner = expressAsyncHandler(
         status: false,
         message: `Cartela ${cartelaID} wasn't played in the current game!`,
       });
+
     if (role !== ROLES.superAdmin) {
       if (game.branch.id !== user.branch.id) {
         return res.status(401).json({
@@ -181,8 +210,12 @@ export const checkWinner = expressAsyncHandler(
         });
       }
     }
+
+    let isMatchedIndex = game.game_cartelas.findIndex(
+      (x) => x.is_fully_matched === true
+    );
     if (
-      game.game_cartelas.findIndex((x) => x.is_fully_matched === true) == -1 &&
+      isMatchedIndex == -1 &&
       steps >
         game.game_cartelas.reduce((max, obj) => {
           return obj.attempts > max ? obj.attempts : max;
@@ -203,14 +236,16 @@ export const checkWinner = expressAsyncHandler(
       }
     }
     let winners = await findWinners(game.game_cartelas);
+
     let isWinner: boolean = false;
-    if (winners.length > 0) {
+
+    if (winners.length > 0 && isMatchedIndex === -1) {
       for (let x = 0; x < game.game_cartelas.length; x++) {
         await updateGameCartela(game.game_cartelas[x]);
       }
-      let winner_cartela = await findAndRemoveObjectById(winners, cartelaID);
-      isWinner = winner_cartela === null ? false : true;
     }
+    let winner_cartela = await findAndRemoveObjectById(winners, cartelaID);
+    isWinner = winner_cartela === null ? false : true;
 
     res.status(200).json({
       status: true,
@@ -221,9 +256,10 @@ export const checkWinner = expressAsyncHandler(
           attempts: gameCartela.attempts,
           game: gameCartela.game,
           is_fully_matched: gameCartela.is_fully_matched,
-          matched_board: convertToBingoArray(
-            JSON.parse(gameCartela.matched_board)
-          ),
+          matched_board:
+            gameCartela.matched_board !== null
+              ? convertToBingoArray(gameCartela.matched_board)
+              : null,
         },
         is_winner: isWinner,
         other_winners: winners.map((x) => {
@@ -232,7 +268,10 @@ export const checkWinner = expressAsyncHandler(
             cartela: x.cartela,
             game: x.game,
             attempts: x.attempts,
-            matched_board: convertToBingoArray(JSON.parse(x.matched_board)),
+            matched_board:
+              JSON.stringify(x.matched_board) !== null
+                ? convertToBingoArray(x.matched_board)
+                : null,
             is_fully_matched: x.is_fully_matched,
           };
         }),
