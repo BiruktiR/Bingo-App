@@ -28,6 +28,11 @@ export const login = expressAsyncHandler(
         status: 400,
         message: 'Username or password is incorrect',
       });
+    if (user.status == false)
+      return res.status(401).json({
+        status: 401,
+        message: 'Cannot login through account because it is disabled',
+      });
     const accessToken = await generateToken(TOKEN_TYPE.access, {
       id: user.id,
       role: user.role,
