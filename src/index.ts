@@ -9,6 +9,7 @@ import { initializeSuperAdmin } from './services/user.service';
 import { companyRouter } from './routes/company.route';
 import { userRouter } from './routes/user.route';
 import { cartelaRouter } from './routes/cartela.route';
+import { gameRouter } from './routes/game.route';
 
 config();
 const app: Application = express();
@@ -35,6 +36,7 @@ app.use('/api/branch', branchRouter);
 app.use('/api/company', companyRouter);
 app.use('/api/user', userRouter);
 app.use('/api/cartela', cartelaRouter);
+app.use('/api/game', gameRouter);
 
 app.use(globalValidation);
 app.listen(process.env.PORT_NUMBER, () => {

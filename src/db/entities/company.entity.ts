@@ -18,7 +18,7 @@ export class Company {
   })
   name: string;
 
-  @OneToMany(() => Branch, (branch) => branch.company)
+  @OneToMany(() => Branch, (branch) => branch.company, { cascade: true })
   @JoinColumn()
   branches: Branch[];
 }

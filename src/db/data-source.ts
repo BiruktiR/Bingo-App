@@ -5,6 +5,8 @@ import { Token } from './entities/token.entity';
 import { Branch } from './entities/branch.entity';
 import { Cartela } from './entities/cartela.entity';
 import { Company } from './entities/company.entity';
+import { Game } from './entities/game.entity';
+import { GameCartela } from './entities/game_cartela.entity';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
   database: 'bingo_db',
   synchronize: true,
   logging: false,
-  entities: [User, Token, Branch, Cartela, Company],
+  entities: [User, Token, Branch, Cartela, Company, Game, GameCartela],
   migrations: [],
   subscribers: [],
 });

@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Token } from './token.entity';
 import { Branch } from './branch.entity';
+import { Game } from './game.entity';
 
 @Entity('users')
 export class User {
@@ -40,11 +41,15 @@ export class User {
   @Column({ default: true })
   status: Boolean;
 
-  @OneToOne(() => Token, (x) => x.token)
+  @OneToOne(() => Token, (x) => x.token, { cascade: true })
   @JoinColumn()
   token: Token;
 
   @ManyToOne(() => Branch, (branch) => branch.users)
   @JoinColumn()
   branch: Branch;
+
+  @OneToMany(() => Game, (game) => game.player, { cascade: true })
+  @JoinColumn()
+  games: Game[];
 }
