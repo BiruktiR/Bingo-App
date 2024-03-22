@@ -91,15 +91,13 @@ export const findByUserId = async (id: string) => {
   });
 };
 export const findAllUsersById = async (id: string) => {
-  return userRepository.findOne({
-    relations: {
-      branch: true,
-      token: true,
-    },
-    where: {
-      id: id,
-    },
-  });
+  return await userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.branch', 'branch')
+    .leftJoinAndSelect('branch.company', 'company')
+    .leftJoinAndSelect('users.token', 'token')
+    .where('users.id=:userID', { userID: id })
+    .getOne();
 };
 export const findByUserIdRoleBased = async (
   id: string,
@@ -226,4 +224,7 @@ export const initializeSuperAdmin = async () => {
 
   await registerTokenForUser(createdUser.id, tokenObject);
   return;
+};
+export const changePassword = async (id: string, password: string) => {
+  await userRepository.update({ id: id }, { password: password });
 };
