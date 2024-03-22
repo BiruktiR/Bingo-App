@@ -128,15 +128,13 @@ export const findByUsername = async (username: string) => {
   });
 };
 export const findByUsernameForLogin = async (username: string) => {
-  return userRepository.findOne({
-    relations: {
-      branch: true,
-      token: true,
-    },
-    where: {
-      username: username,
-    },
-  });
+  return await userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.branch', 'branch')
+    .leftJoinAndSelect('branch.company', 'company')
+    .leftJoinAndSelect('users.token', 'token')
+    .where('users.username=:userName', { userName: username })
+    .getOne();
 };
 export const findBySuperAdminRole = async () => {
   return userRepository.findOne({
