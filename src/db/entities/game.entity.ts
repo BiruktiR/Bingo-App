@@ -18,7 +18,9 @@ export class Game {
   @Column()
   called_numbers: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+  })
   pattern: string;
 
   @Column({ type: 'double' })

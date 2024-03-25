@@ -18,7 +18,9 @@ export class Cartela {
   @JoinColumn()
   branch: Branch;
 
-  @Column()
+  @Column({
+    type: 'text',
+  })
   board: string;
 
   @OneToMany(() => GameCartela, (game_cartela) => game_cartela.cartela, {
