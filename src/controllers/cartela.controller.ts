@@ -56,7 +56,7 @@ export const save = expressAsyncHandler(
         status: false,
         message: 'Board already exists!',
       });
-    await add(board, branch);
+    await add(board.board, branch);
     res.status(200).json({
       status: true,
       message: 'Cartela is added successfully!',
