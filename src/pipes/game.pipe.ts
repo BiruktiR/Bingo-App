@@ -9,7 +9,7 @@ export const AddGamePipe = expressAsyncHandler(
       console.log(req.body.pattern);
       if (req.body.pattern?.length > 2) {
         if (req.body.pattern[2]?.N) {
-          req.body.pattern[2].N = 0;
+          req.body.pattern[2].N = false;
         }
       }
       let pattern: TBingo[] = req.body.pattern;

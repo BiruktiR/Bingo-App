@@ -16,3 +16,10 @@ export class MetadataType {
   currentPage: number;
   total: number;
 }
+export interface InputData {
+  B: number[];
+  I: number[];
+  N: number[];
+  G: number[];
+  O: number[];
+}

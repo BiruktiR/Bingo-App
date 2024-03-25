@@ -12,7 +12,10 @@ import {
 import { findById } from '../services/branch.service';
 import { findByUserId } from '../services/user.service';
 import { TFindCartelaSchema } from '../config/zod-schemas/cartela.schema';
-import { convertToBingoArray } from '../config/util-functions';
+import {
+  convertToBingoArray,
+  reverseConvertData,
+} from '../config/util-functions';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -41,7 +44,7 @@ export const getById = expressAsyncHandler(
     const cartela = await findCartelaById(id, role, user?.branch?.id);
     res.status(200).json({
       status: true,
-      data: cartela !== null ? convertToBingoArray(cartela.board) : cartela,
+      data: cartela !== null ? reverseConvertData(cartela.board) : cartela,
     });
   }
 );
@@ -69,6 +72,7 @@ export const saveMultiple = expressAsyncHandler(
     const branch = res.locals.branch;
 
     for (let x = 0; x < cartela.board.length; x++) {
+      console.log(cartela.board[x]);
       if (!(await checkAddDuplicate(cartela.board[x], branch.id)))
         return res.status(302).json({
           status: false,
@@ -107,7 +111,11 @@ export const update = expressAsyncHandler(
     res.status(200).json({
       status: true,
       message: 'Cartela is updated successfully!',
-      data: updatedCartela,
+      data: {
+        id: updatedCartela.id,
+        branch: updatedCartela.branch,
+        board: reverseConvertData(updatedCartela.board),
+      },
     });
   }
 );

@@ -9,7 +9,10 @@ import { ROLES } from '../config/other-types/Enums';
 import { MetadataType } from '../config/other-types/metadata';
 import { generateMetadata } from '../config/generate-metadata';
 import { number } from 'zod';
-import { convertToBingoArray } from '../config/util-functions';
+import {
+  convertToBingoArray,
+  reverseConvertData,
+} from '../config/util-functions';
 
 const cartelaRepository = AppDataSource.getRepository(Cartela);
 
@@ -50,7 +53,7 @@ export const findCartela = async (
       return {
         id: x.id,
         branch: x.branch,
-        board: convertToBingoArray(JSON.parse(x.board)),
+        board: reverseConvertData(JSON.parse(x.board)),
       };
     }),
   };
@@ -92,7 +95,7 @@ export const add = async (board: any, branch: Branch) => {
     branch: branch,
     board: JSON.stringify(board),
   });
-  console.log('WANNABE', cartelaBoard);
+
   await cartelaRepository.save(cartelaBoard);
 };
 

@@ -118,8 +118,8 @@ export const add = expressAsyncHandler(
         (cart.branch = tempCartela.branch);
       cartela.push(cart);
     }
-    const pattern: number[] = game.pattern.flat();
-    const indexArray: number[] = await findIndexesOfNumber(pattern, 1);
+    const pattern: boolean[] = game.pattern.flat();
+    const indexArray: number[] = await findIndexesOfNumber(pattern, true);
     const randomNumbers: number[] = await generateUniqueRandomNumbers(
       75,
       1,
@@ -221,8 +221,8 @@ export const checkWinner = expressAsyncHandler(
           return obj.attempts > max ? obj.attempts : max;
         }, -Infinity)
     ) {
-      const pattern: number[] = game.pattern.flat();
-      const indexArray: number[] = await findIndexesOfNumber(pattern, 1);
+      const pattern: boolean[] = game.pattern.flat();
+      const indexArray: number[] = await findIndexesOfNumber(pattern, true);
       for (let x = 0; x < game.game_cartelas.length; x++) {
         let { attempts, matchBoard, isFullyMatched } = await getBingoAttempts(
           indexArray,

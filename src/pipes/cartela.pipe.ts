@@ -4,7 +4,9 @@ import { findById } from '../services/branch.service';
 import { findCartelaById } from '../services/cartela.service';
 import { findByUserId } from '../services/user.service';
 import { number } from 'zod';
-import { TBingo } from 'src/config/other-types/match';
+import { TBingo } from '../config/other-types/match';
+import { InputData } from '../config/other-types/metadata';
+import { convertData } from '../config/util-functions';
 export const addCartelaPipe = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
     let branchId = req?.params?.branchID;
@@ -18,15 +20,14 @@ export const addCartelaPipe = expressAsyncHandler(
 
     if (req?.body?.board !== undefined && req?.body?.board !== null) {
       req.body.board = JSON.parse(req.body.board);
-      if (req.body.board?.length > 2) {
-        if (req.body.board[2]?.N) {
-          req.body.board[2].N = 0;
-        }
+      if (req.body.board?.N.length > 2) {
+        req.body.board.N[2] = 0;
       }
-      let board: TBingo[] = req.body.board;
-      if (Array.isArray(req.body.board)) {
-        req.body.board = board.map((obj) => Object.values(obj));
-      }
+      // let board: TBingo[] = req.body.board;
+      // if (Array.isArray(req.body.board)) {
+      //   req.body.board = board.map((obj) => Object.values(obj));
+      // }
+      req.body.board = await convertData(req.body.board);
     }
     next();
   }
@@ -47,15 +48,21 @@ export const addMultipleCartelaPipe = expressAsyncHandler(
       console.log(req.body.board);
       if (Array.isArray(req.body.board)) {
         for (let x = 0; x < req.body.board.length; x++) {
-          if (req.body.board[x]?.length > 2) {
-            if (req.body.board[x][2]?.N) {
-              req.body.board[x][2].N = 0;
-            }
+          if (req.body.board[x]?.N.length > 2) {
+            req.body.board[x].N[2] = 0;
           }
-          let board: TBingo[] = req.body.board[x];
-          if (Array.isArray(req.body.board[x])) {
-            req.body.board[x] = board.map((obj) => Object.values(obj));
-          }
+          // if (req.body.board[x]?.length > 2) {
+          //   if (req.body.board[x][2]?.N) {
+          //     req.body.board[x][2].N = 0;
+          //   }
+          // }
+          let board = req.body.board[x];
+          console.log('BEFORE', board);
+          req.body.board[x] = await convertData(board);
+          console.log('I AM CONVERTEEEEEEEEEED', req.body.board[x]);
+          // if (Array.isArray(req.body.board[x])) {
+          //   req.body.board[x] = board.map((obj) => Object.values(obj));
+          // }
         }
       }
     }
@@ -83,15 +90,23 @@ export const updateCartelaPipe = expressAsyncHandler(
       req.body.board = cartela.board;
     } else {
       req.body.board = JSON.parse(req.body.board);
-      if (req.body.board?.length > 2) {
-        if (req.body.board[2]?.N) {
-          req.body.board[2].N = 0;
-        }
+      // if (req.body.board?.length > 2) {
+      //   if (req.body.board[2]?.N) {
+      //     req.body.board[2].N = 0;
+      //   }
+      // }
+      // let board: TBingo[] = req.body.board;
+      // if (Array.isArray(req.body.board)) {
+      //   req.body.board = board.map((obj) => Object.values(obj));
+      // }
+      if (req.body.board?.N.length > 2) {
+        req.body.board.N[2] = 0;
       }
-      let board: TBingo[] = req.body.board;
-      if (Array.isArray(req.body.board)) {
-        req.body.board = board.map((obj) => Object.values(obj));
-      }
+      // let board: TBingo[] = req.body.board;
+      // if (Array.isArray(req.body.board)) {
+      //   req.body.board = board.map((obj) => Object.values(obj));
+      // }
+      req.body.board = await convertData(req.body.board);
     }
     next();
   }
