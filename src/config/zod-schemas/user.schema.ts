@@ -44,3 +44,15 @@ export const FindUserSchema: ZodSchema = z.object({
 });
 
 export type TFindUserSchema = z.infer<typeof FindUserSchema>;
+
+export const UpdatePasswordSchema: ZodSchema = z
+  .object({
+    old_password: z.string().min(8),
+    new_password: z.string().min(8),
+    repeat_password: z.string().min(8),
+  })
+  .refine((data) => data.new_password === data.repeat_password, {
+    message: 'Passwords do not match',
+  });
+
+export type TUpdatePasswordSchema = z.infer<typeof UpdatePasswordSchema>;

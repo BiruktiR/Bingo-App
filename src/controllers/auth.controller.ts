@@ -9,10 +9,13 @@ import {
 import { verify } from 'jsonwebtoken';
 import { TLogin } from '../config/zod-schemas/login.schema';
 import {
+  changePassword,
+  findAllUsersById,
   findByUsername,
   findByUsernameForLogin,
 } from '../services/user.service';
-import { isPasswordCorrect } from '../services/auth.service';
+import { encryptPassword, isPasswordCorrect } from '../services/auth.service';
+import { TUpdatePasswordSchema } from 'src/config/zod-schemas/user.schema';
 
 export const login = expressAsyncHandler(
   async (req: Request, res: any, next: NextFunction) => {
@@ -86,6 +89,29 @@ export const generateAccessToken = expressAsyncHandler(
         status: true,
         token: accessToken,
       });
+    });
+  }
+);
+
+export const updatePassword = expressAsyncHandler(
+  async (req: Request, res: any, next: NextFunction) => {
+    let passwordData: TUpdatePasswordSchema = req.body;
+    const userID: string = res.locals.user.id;
+    let user = await findAllUsersById(userID);
+
+    if (!(await isPasswordCorrect(passwordData.old_password, user.password))) {
+      return res.status(400).json({
+        status: false,
+        message: 'Provided old password is incorrect!',
+      });
+    }
+    let encryptedPassword = await encryptPassword(passwordData.new_password);
+    await changePassword(userID, encryptedPassword);
+    let { password, token, ...everything } = user;
+    res.status(200).json({
+      status: true,
+      message: 'Password is updated successfully!',
+      data: everything,
     });
   }
 );
