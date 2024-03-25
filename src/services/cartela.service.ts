@@ -87,11 +87,13 @@ export const checkAddDuplicate = async (
     .getOne();
   return cartela === null;
 };
-export const add = async (board: TCartela, branch: Branch) => {
-  await cartelaRepository.save({
-    board: JSON.stringify(board.board),
+export const add = async (board: any, branch: Branch) => {
+  let cartelaBoard = cartelaRepository.create({
     branch: branch,
+    board: JSON.stringify(board),
   });
+  console.log('WANNABE', cartelaBoard);
+  await cartelaRepository.save(cartelaBoard);
 };
 
 export const checkUpdateDuplicate = async (
