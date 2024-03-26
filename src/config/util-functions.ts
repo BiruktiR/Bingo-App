@@ -150,6 +150,9 @@ export function getMomentDate(date: string, type: string) {
       : parsedDate.endOf('day');
 
   const guessedOffset = moment.tz(currentTimezone).utcOffset();
-  const hoursToSubtract = guessedOffset - 180;
-  return firstConversion.clone().add(hoursToSubtract, 'hours').toDate();
+  const hoursToSubtract = (guessedOffset - 180) / 60;
+  return firstConversion
+    .clone()
+    .add(hoursToSubtract + guessedOffset / 60, 'hours')
+    .toDate();
 }
