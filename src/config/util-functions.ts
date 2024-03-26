@@ -88,6 +88,7 @@ export function convertBool(input: InputBoolean): boolean[][] {
   return result;
 }
 export function reverseConvertData(input: number[][]): InputData {
+  if (input == null) return null;
   const result: InputData = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
 
@@ -104,6 +105,7 @@ export function reverseConvertData(input: number[][]): InputData {
   return result;
 }
 export function reverseConvertBoolean(input: boolean[][]): InputBoolean {
+  if (input == null) return null;
   const result: InputBoolean = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
 
@@ -120,6 +122,7 @@ export function reverseConvertBoolean(input: boolean[][]): InputBoolean {
   return result;
 }
 export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
+  if (input == null) return null;
   const result: OutputMatchBoard = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
 
