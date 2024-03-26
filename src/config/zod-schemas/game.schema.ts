@@ -1,5 +1,5 @@
 import { ZodSchema, z } from 'zod';
-const RowSchema = z.array(z.number().min(0).max(1)).length(5);
+const RowSchema = z.array(z.boolean()).length(5);
 
 // Define the schema for the entire 5x5 array
 export const MatrixSchema = z
@@ -8,14 +8,14 @@ export const MatrixSchema = z
   .refine(
     (matrix) => {
       // Check if there is at least one instance of 1 in the matrix
-      const oneFound = matrix.some((row) => row.includes(1));
+      const oneFound = matrix.some((row) => row.includes(true));
       // Check if the middle center is always 0
-      const middleCenter = matrix[2][2] === 0;
+      const middleCenter = matrix[2][2] === false;
       return oneFound && middleCenter;
     },
     {
       message:
-        'At least one instance of 1 is required, and the middle center should always be 0',
+        'At least one instance true is required, and the middle center should always be false',
     }
   );
 // const patternRow = z
