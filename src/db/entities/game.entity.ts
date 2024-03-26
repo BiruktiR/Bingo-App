@@ -30,8 +30,8 @@ export class Game {
   @JoinColumn()
   branch: Branch;
 
-  @Column({ type: 'date' })
-  date: string;
+  @Column()
+  date: Date;
 
   @Column()
   type: number;

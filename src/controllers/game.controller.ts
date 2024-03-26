@@ -10,6 +10,8 @@ import {
   convertToBingoArray,
   findIndexesOfNumber,
   getDate,
+  reverseConvertBoolean,
+  reverseMatchBoard,
 } from '../config/util-functions';
 import {
   addGame,
@@ -32,6 +34,13 @@ export const get = expressAsyncHandler(
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
+    if (filters?.start_date && res?.locals?.start_date) {
+      filters.start_date = res.locals.start_date;
+    }
+    if (filters?.end_date && res?.locals?.end_date) {
+      filters.end_date = res.locals.end_date;
+    }
+
     let data = await findGame(role, user, filters);
     res.status(200).json({
       status: true,
@@ -70,12 +79,12 @@ export const getById = expressAsyncHandler(
           id: y.id,
           cartela: y.cartela,
           game: y.game,
-          matched_board: convertToBingoArray(y.matched_board),
+          matched_board: reverseMatchBoard(y.matched_board),
           attempts: y.attempts,
           is_fully_matched: y.is_fully_matched,
         };
       });
-      data.pattern = convertToBingoArray(data.pattern);
+      data.pattern = reverseConvertBoolean(data.pattern);
     }
     res.status(200).json({
       status: true,
@@ -126,7 +135,7 @@ export const add = expressAsyncHandler(
       75,
       RANDOM_TYPE.raw
     );
-    const generatedDate: string = await getDate();
+    const generatedDate = new Date();
     let savedGame = await addGame(
       randomNumbers,
       game.pattern,
@@ -154,12 +163,12 @@ export const add = expressAsyncHandler(
           id: y.id,
           cartela: y.cartela,
           game: y.game,
-          matched_board: convertToBingoArray(y.matched_board),
+          matched_board: reverseMatchBoard(y.matched_board),
           attempts: y.attempts,
           is_fully_matched: y.is_fully_matched,
         };
       });
-      finalOutput.pattern = convertToBingoArray(finalOutput.pattern);
+      finalOutput.pattern = reverseConvertBoolean(finalOutput.pattern);
     }
     res.status(200).json({
       status: true,
@@ -258,7 +267,7 @@ export const checkWinner = expressAsyncHandler(
           is_fully_matched: gameCartela.is_fully_matched,
           matched_board:
             gameCartela.matched_board !== null
-              ? convertToBingoArray(gameCartela.matched_board)
+              ? reverseMatchBoard(gameCartela.matched_board)
               : null,
         },
         is_winner: isWinner,
@@ -270,7 +279,7 @@ export const checkWinner = expressAsyncHandler(
             attempts: x.attempts,
             matched_board:
               JSON.stringify(x.matched_board) !== null
-                ? convertToBingoArray(x.matched_board)
+                ? reverseMatchBoard(x.matched_board)
                 : null,
             is_fully_matched: x.is_fully_matched,
           };

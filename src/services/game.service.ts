@@ -13,6 +13,8 @@ import { TMatch } from '../config/other-types/match';
 import {
   convertTo2DArray,
   convertToBingoArray,
+  reverseConvertBoolean,
+  reverseMatchBoard,
 } from '../config/util-functions';
 
 const gameRepository = AppDataSource.getRepository(Game);
@@ -59,7 +61,9 @@ export const findGame = async (
       startDate: filters.start_date,
     });
   if (filters?.end_date)
-    await game.andWhere('games.date < :endDate', { endDate: filters.end_date });
+    await game.andWhere('games.date <= :endDate', {
+      endDate: filters.end_date,
+    });
   let page: number = !Number.isNaN(parseInt(filters.page))
     ? parseInt(filters.page)
     : 1;
@@ -80,7 +84,7 @@ export const findGame = async (
       return {
         id: data.id,
         called_numbers: JSON.parse(data.called_numbers),
-        pattern: convertToBingoArray(JSON.parse(data.pattern)),
+        pattern: reverseConvertBoolean(JSON.parse(data.pattern)),
         bet: data.bet,
         branch: data.branch,
         date: data.date,
@@ -92,7 +96,7 @@ export const findGame = async (
             game: y.game,
             matched_board:
               y.matched_board !== ''
-                ? convertToBingoArray(JSON.parse(y.matched_board))
+                ? reverseMatchBoard(JSON.parse(y.matched_board))
                 : '',
             attempts: y.attempts,
             is_fully_matched: y.is_fully_matched,
@@ -220,7 +224,7 @@ export const addGame = async (
   randomNumbers: number[],
   pattern: number[][],
   branch: Branch,
-  generatedDate: string,
+  generatedDate: Date,
   type: number,
   user: User,
   bet: number

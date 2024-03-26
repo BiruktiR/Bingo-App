@@ -27,7 +27,7 @@ export const addCartelaPipe = expressAsyncHandler(
       // if (Array.isArray(req.body.board)) {
       //   req.body.board = board.map((obj) => Object.values(obj));
       // }
-      req.body.board = await convertData(req.body.board);
+      req.body.board = convertData(req.body.board);
     }
     next();
   }
