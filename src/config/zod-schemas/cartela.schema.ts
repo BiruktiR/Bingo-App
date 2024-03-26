@@ -97,16 +97,15 @@ export const CartelaSchema = z.object({
 });
 export type TCartela = z.infer<typeof CartelaSchema>;
 export const MultipleCartelaSchema = z.object({
-  board: z.array(
-    BoardSchema.refine(
-      (data) => {
-        const uniqueSet = new Set(data.flat());
-        return uniqueSet.size === data.length;
-      },
-      {
-        message: 'Array should not contain duplicate values.',
-      }
-    )
+  board: z.array(BoardSchema).refine(
+    (arrays) => {
+      const arrayStrings = arrays.map((array) => JSON.stringify(array));
+      const uniqueArrayStrings = new Set(arrayStrings);
+      return uniqueArrayStrings.size === arrayStrings.length;
+    },
+    {
+      message: 'Arrays must be unique.',
+    }
   ),
 });
 export type TMultipleCartelaSchema = z.infer<typeof MultipleCartelaSchema>;

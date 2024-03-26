@@ -26,3 +26,7 @@ export enum RANDOM_TYPE {
   raw = 'RAW',
   custom = 'CUSTOM',
 }
+export enum DATE_TYPE {
+  start = 'START',
+  end = 'END',
+}

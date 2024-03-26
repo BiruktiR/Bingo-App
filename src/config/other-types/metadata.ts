@@ -1,3 +1,5 @@
+import { TMatch } from './match';
+
 export class MetadataType {
   startIndex: number;
   endIndex: number;
@@ -22,4 +24,18 @@ export interface InputData {
   N: number[];
   G: number[];
   O: number[];
+}
+export interface InputBoolean {
+  B: boolean[];
+  I: boolean[];
+  N: boolean[];
+  G: boolean[];
+  O: boolean[];
+}
+export interface OutputMatchBoard {
+  B: TMatch[];
+  I: TMatch[];
+  N: TMatch[];
+  G: TMatch[];
+  O: TMatch[];
 }

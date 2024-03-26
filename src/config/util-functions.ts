@@ -1,6 +1,11 @@
 import moment from 'moment-timezone';
 import { TMatch } from './other-types/match';
-import { InputData } from './other-types/metadata';
+import {
+  InputBoolean,
+  InputData,
+  OutputMatchBoard,
+} from './other-types/metadata';
+import { DATE_TYPE } from './other-types/Enums';
 export const findIndexesOfNumber = async (
   pattern: boolean[],
   number: boolean
@@ -66,6 +71,22 @@ export function convertData(input: InputData): number[][] {
 
   return result;
 }
+export function convertBool(input: InputBoolean): boolean[][] {
+  const result: boolean[][] = [];
+  const keys = Object.keys(input) as (keyof InputData)[];
+  const maxLength = Math.max(...keys.map((key) => input[key].length));
+
+  for (let i = 0; i < maxLength; i++) {
+    const row: boolean[] = [];
+    for (const key of keys) {
+      const value = input[key][i];
+      row.push(value !== undefined ? value : false); // If value is undefined, replace with false
+    }
+    result.push(row);
+  }
+
+  return result;
+}
 export function reverseConvertData(input: number[][]): InputData {
   const result: InputData = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
@@ -81,4 +102,51 @@ export function reverseConvertData(input: number[][]): InputData {
   }
 
   return result;
+}
+export function reverseConvertBoolean(input: boolean[][]): InputBoolean {
+  const result: InputBoolean = { B: [], I: [], N: [], G: [], O: [] };
+  const maxLength = Math.max(...input.map((arr) => arr.length));
+
+  for (let i = 0; i < maxLength; i++) {
+    for (const [index, key] of Object.keys(result).entries()) {
+      if (input[i]) {
+        result[key as keyof InputBoolean].push(input[i][index]);
+      } else {
+        result[key as keyof InputBoolean].push(null);
+      }
+    }
+  }
+
+  return result;
+}
+export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
+  const result: OutputMatchBoard = { B: [], I: [], N: [], G: [], O: [] };
+  const maxLength = Math.max(...input.map((arr) => arr.length));
+
+  for (let i = 0; i < maxLength; i++) {
+    for (const [index, key] of Object.keys(result).entries()) {
+      if (input[i]) {
+        result[key as keyof OutputMatchBoard].push(input[i][index]);
+      } else {
+        result[key as keyof OutputMatchBoard].push(null);
+      }
+    }
+  }
+
+  return result;
+}
+export function guessTimezone(): string {
+  return moment.tz.guess();
+}
+export function getMomentDate(date: string, type: string) {
+  let currentTimezone = guessTimezone();
+  let parsedDate = moment(date);
+  let firstConversion =
+    type == DATE_TYPE.start
+      ? parsedDate.startOf('day')
+      : parsedDate.endOf('day');
+
+  const guessedOffset = moment.tz(currentTimezone).utcOffset();
+  const hoursToSubtract = guessedOffset - 180;
+  return firstConversion.clone().add(hoursToSubtract, 'hours').toDate();
 }
