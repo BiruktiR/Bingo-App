@@ -34,6 +34,7 @@ export const get = expressAsyncHandler(
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
+    console.log(res?.locals?.start_date);
     if (filters?.start_date && res?.locals?.start_date) {
       filters.start_date = res.locals.start_date;
     }

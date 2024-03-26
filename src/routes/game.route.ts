@@ -10,7 +10,7 @@ import {
   CheckGameSchema,
   FindGameSchema,
 } from '../config/zod-schemas/game.schema';
-import { AddGamePipe, CheckGamePipe } from '../pipes/game.pipe';
+import { AddGamePipe, CheckGamePipe, FindGamePipe } from '../pipes/game.pipe';
 import {
   get,
   getById,
@@ -26,6 +26,7 @@ gameRouter.get(
   '',
   validateToken,
   validateRole(GUARD_TYPES.all),
+  FindGamePipe,
   validateSchema(FindGameSchema, validationType.query),
   get
 );
