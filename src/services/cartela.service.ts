@@ -39,7 +39,7 @@ export const findCartela = async (
     : 1;
   let limit: number = !Number.isNaN(parseInt(filters.limit))
     ? parseInt(filters.limit)
-    : 20;
+    : 51;
   let offset: number = limit * (page - 1);
 
   await data.skip(offset).take(limit);

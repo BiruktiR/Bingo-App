@@ -10,6 +10,8 @@ import {
   convertToBingoArray,
   findIndexesOfNumber,
   getDate,
+  getEthiopianDate,
+  getUTCDate,
   reverseConvertBoolean,
   reverseMatchBoard,
 } from '../config/util-functions';
@@ -76,6 +78,7 @@ export const getById = expressAsyncHandler(
     }
     if (data !== null) {
       data.game_cartelas.map((y) => {
+        y.game.date = getEthiopianDate(y.game.date);
         return {
           id: y.id,
           cartela: y.cartela,
@@ -136,7 +139,7 @@ export const add = expressAsyncHandler(
       75,
       RANDOM_TYPE.raw
     );
-    const generatedDate = new Date();
+    const generatedDate = getUTCDate();
     let savedGame = await addGame(
       randomNumbers,
       game.pattern,
@@ -160,6 +163,7 @@ export const add = expressAsyncHandler(
     let finalOutput = await findGameById(savedGame.id);
     if (finalOutput !== null) {
       finalOutput.game_cartelas.map((y) => {
+        y.game.date = getEthiopianDate(y.game.date);
         return {
           id: y.id,
           cartela: y.cartela,
@@ -256,7 +260,7 @@ export const checkWinner = expressAsyncHandler(
     }
     let winner_cartela = await findAndRemoveObjectById(winners, cartelaID);
     isWinner = winner_cartela === null ? false : true;
-
+    gameCartela.game.date = getEthiopianDate(gameCartela.game.date);
     res.status(200).json({
       status: true,
       data: {
@@ -273,6 +277,7 @@ export const checkWinner = expressAsyncHandler(
         },
         is_winner: isWinner,
         other_winners: winners.map((x) => {
+          x.game.date = getEthiopianDate(x.game.date);
           return {
             id: x.id,
             cartela: x.cartela,

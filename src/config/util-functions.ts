@@ -149,10 +149,17 @@ export function getMomentDate(date: string, type: string) {
       ? parsedDate.startOf('day')
       : parsedDate.endOf('day');
 
-  const guessedOffset = moment.tz(currentTimezone).utcOffset();
-  const hoursToSubtract = (guessedOffset - 180) / 60;
-  return firstConversion
-    .clone()
-    .add(hoursToSubtract + guessedOffset / 60, 'hours')
-    .toDate();
+  // const guessedOffset = moment.tz(currentTimezone).utcOffset();
+  // const hoursToSubtract = (guessedOffset - 180) / 60;
+  // return firstConversion
+  //   .clone()
+  //   .add(hoursToSubtract + guessedOffset / 60, 'hours')
+  //   .toDate();
+  return firstConversion.utc().toDate();
+}
+export function getUTCDate() {
+  return moment(new Date()).utc().toDate();
+}
+export function getEthiopianDate(date: Date) {
+  return moment(date).clone().add(3, 'hours').toDate();
 }

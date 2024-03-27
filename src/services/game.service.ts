@@ -13,6 +13,7 @@ import { TMatch } from '../config/other-types/match';
 import {
   convertTo2DArray,
   convertToBingoArray,
+  getEthiopianDate,
   reverseConvertBoolean,
   reverseMatchBoard,
 } from '../config/util-functions';
@@ -69,7 +70,7 @@ export const findGame = async (
     : 1;
   let limit: number = !Number.isNaN(parseInt(filters.limit))
     ? parseInt(filters.limit)
-    : 20;
+    : 51;
   let offset: number = limit * (page - 1);
 
   await game.skip(offset).take(limit);
@@ -87,7 +88,7 @@ export const findGame = async (
         pattern: reverseConvertBoolean(JSON.parse(data.pattern)),
         bet: data.bet,
         branch: data.branch,
-        date: data.date,
+        date: getEthiopianDate(data.date),
         type: data.type * 5,
         game_cartelas: data.game_cartelas.map((y) => {
           return {
