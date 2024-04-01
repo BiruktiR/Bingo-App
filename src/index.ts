@@ -10,6 +10,7 @@ import { companyRouter } from './routes/company.route';
 import { userRouter } from './routes/user.route';
 import { cartelaRouter } from './routes/cartela.route';
 import { gameRouter } from './routes/game.route';
+import { dashboardRouter } from './routes/dashboard.route';
 
 config();
 const app: Application = express();
@@ -37,6 +38,7 @@ app.use('/api/company', companyRouter);
 app.use('/api/user', userRouter);
 app.use('/api/cartela', cartelaRouter);
 app.use('/api/game', gameRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.use(globalValidation);
 app.listen(process.env.PORT_NUMBER, () => {

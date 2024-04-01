@@ -163,3 +163,61 @@ export function getUTCDate() {
 export function getEthiopianDate(date: Date) {
   return moment(date).clone().add(3, 'hours').toDate();
 }
+export function getMomentStartEnd() {
+  let parsedDate = moment(new Date()).utc();
+
+  let currentTimezone = guessTimezone();
+  const guessedOffset = moment.tz(currentTimezone).utcOffset();
+  const hoursToSubtract = guessedOffset / 60;
+
+  let todayStart = parsedDate
+    .startOf('day')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let todayEnd = parsedDate
+    .endOf('day')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let weekStart = parsedDate
+    .startOf('isoWeek')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let weekEnd = parsedDate
+    .endOf('isoWeek')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let monthStart = parsedDate
+    .startOf('month')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let monthEnd = parsedDate
+    .endOf('month')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let yearStart = parsedDate
+    .startOf('year')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let yearEnd = parsedDate
+    .endOf('year')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  return {
+    todayStart,
+    todayEnd,
+    weekStart,
+    weekEnd,
+    monthStart,
+    monthEnd,
+    yearStart,
+    yearEnd,
+  };
+}
