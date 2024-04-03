@@ -46,6 +46,6 @@ export const getTotalSales = async (
     AND (b.companyId='${companyID}')) AS g;`;
 
   let data = await entityManager.query(query);
-  console.log(data);
+
   return parseInt(data[0].total_monthly_sales);
 };

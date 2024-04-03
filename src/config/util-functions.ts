@@ -122,6 +122,7 @@ export function reverseConvertBoolean(input: boolean[][]): InputBoolean {
   return result;
 }
 export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
+
   if (input == null) return null;
   const result: OutputMatchBoard = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
@@ -135,7 +136,7 @@ export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
       }
     }
   }
-
+ 
   return result;
 }
 export function guessTimezone(): string {

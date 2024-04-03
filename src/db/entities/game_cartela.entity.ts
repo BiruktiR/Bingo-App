@@ -16,11 +16,13 @@ export class GameCartela {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Cartela, (cartela) => cartela.game_cartelas)
+  @ManyToOne(() => Cartela, (cartela) => cartela.game_cartelas, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   cartela: Cartela;
 
-  @ManyToOne(() => Game, (game) => game.game_cartelas)
+  @ManyToOne(() => Game, (game) => game.game_cartelas, { onDelete: 'CASCADE' })
   @JoinColumn()
   game: Game;
 

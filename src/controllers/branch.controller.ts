@@ -54,9 +54,9 @@ export const add = expressAsyncHandler(
         status: false,
         message: 'Company is not found!',
       });
-    console.log(branch);
+  
     const data = await findByName(branch.name, companyID);
-    console.log(data);
+
     if (data !== null)
       return res.status(402).json({
         status: false,

@@ -124,6 +124,7 @@ export const findGameById = async (id: string) => {
   let initialEarning: number = game.bet * game.game_cartelas.length;
   let percentageCut: number = initialEarning * ((game.type * 5) / 100);
   let { called_numbers, pattern } = game;
+  game.date = getEthiopianDate(game.date);
 
   return {
     ...game,
@@ -178,6 +179,14 @@ export const generateUniqueRandomNumbers = (
   // });
   // return numbersWithRange;
 };
+export const generateCustomBoard = async (board: number[]) => {
+  return board.map((x) => {
+    return {
+      value: x,
+      isMatched: false,
+    };
+  });
+};
 export const getBingoAttempts = async (
   indexArray: number[],
   randomNumbers: number[],
@@ -185,13 +194,7 @@ export const getBingoAttempts = async (
   steps: number
 ) => {
   const board: number[] = JSON.parse(cartela.board).flat();
-  let matchBoard = board.map((x) => {
-    return {
-      value: x,
-      isMatched: false,
-    };
-  });
-
+  let matchBoard = await generateCustomBoard(board);
   let isFullyMatched: boolean = false;
 
   let attempts: number = 0;
@@ -243,13 +246,23 @@ export const addGame = async (
   await gameRepository.save(game);
   return game;
 };
-export const addGameCartela = async (game: Game, cartela: Cartela) => {
+export const addGameCartela = async (
+  game: Game,
+  cartela: Cartela,
+  indexArrayLength: number
+) => {
+  let matchboard: string = '';
+  if (indexArrayLength == 0) {
+    const board: number[] = JSON.parse(cartela.board).flat();
+    let matchBoard2d = await convertTo2DArray(await generateCustomBoard(board));
+    matchboard = JSON.stringify(matchBoard2d);
+  }
   let gameCartela = gameCartelaRepository.create({
     cartela: cartela,
     game: game,
     attempts: 0,
-    matched_board: '',
-    is_fully_matched: false,
+    matched_board: matchboard,
+    is_fully_matched: indexArrayLength == 0 ? true : false,
   });
   await gameCartelaRepository.save(gameCartela);
 };

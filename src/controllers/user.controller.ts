@@ -145,13 +145,7 @@ export const update = expressAsyncHandler(
         userID
       )
     ) {
-      console.log(
-        await checkDuplicationUpdate(
-          req.body.username,
-          req.body.phone_number,
-          userID
-        )
-      );
+      
       return res.status(402).json({
         status: false,
         message: 'User already exists!',

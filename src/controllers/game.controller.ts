@@ -36,7 +36,7 @@ export const get = expressAsyncHandler(
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
-    console.log(res?.locals?.start_date);
+ 
     if (filters?.start_date && res?.locals?.start_date) {
       filters.start_date = res.locals.start_date;
     }
@@ -78,7 +78,6 @@ export const getById = expressAsyncHandler(
     }
     if (data !== null) {
       data.game_cartelas.map((y) => {
-        y.game.date = getEthiopianDate(y.game.date);
         return {
           id: y.id,
           cartela: y.cartela,
@@ -133,6 +132,7 @@ export const add = expressAsyncHandler(
     }
     const pattern: boolean[] = game.pattern.flat();
     const indexArray: number[] = await findIndexesOfNumber(pattern, true);
+
     const randomNumbers: number[] = await generateUniqueRandomNumbers(
       75,
       1,
@@ -149,8 +149,9 @@ export const add = expressAsyncHandler(
       user,
       game.bet
     );
+
     for (let x = 0; x < cartela.length; x++) {
-      await addGameCartela(savedGame, cartela[x]);
+      await addGameCartela(savedGame, cartela[x], indexArray.length);
     }
     // cartela.forEach(async (x) => {
     //   // let { attempts, matchBoard } = await getBingoAttempts(
@@ -163,7 +164,6 @@ export const add = expressAsyncHandler(
     let finalOutput = await findGameById(savedGame.id);
     if (finalOutput !== null) {
       finalOutput.game_cartelas.map((y) => {
-        y.game.date = getEthiopianDate(y.game.date);
         return {
           id: y.id,
           cartela: y.cartela,
@@ -260,7 +260,6 @@ export const checkWinner = expressAsyncHandler(
     }
     let winner_cartela = await findAndRemoveObjectById(winners, cartelaID);
     isWinner = winner_cartela === null ? false : true;
-    gameCartela.game.date = getEthiopianDate(gameCartela.game.date);
     res.status(200).json({
       status: true,
       data: {
@@ -277,7 +276,6 @@ export const checkWinner = expressAsyncHandler(
         },
         is_winner: isWinner,
         other_winners: winners.map((x) => {
-          x.game.date = getEthiopianDate(x.game.date);
           return {
             id: x.id,
             cartela: x.cartela,

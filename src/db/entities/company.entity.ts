@@ -18,7 +18,7 @@ export class Company {
   })
   name: string;
 
-  @OneToMany(() => Branch, (branch) => branch.company, { cascade: true })
+  @OneToMany(() => Branch, (branch) => branch.company, { onDelete: 'CASCADE' })
   @JoinColumn()
   branches: Branch[];
 }

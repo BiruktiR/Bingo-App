@@ -3,7 +3,6 @@ import expressAsyncHandler from 'express-async-handler';
 import { findByUserId } from '../services/user.service';
 export const addUserPipe = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body.status);
     if (
       req?.body?.status !== undefined &&
       req?.body?.status !== null &&
