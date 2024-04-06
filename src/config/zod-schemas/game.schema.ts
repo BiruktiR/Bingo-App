@@ -72,6 +72,7 @@ export const FindGameSchema: ZodSchema = z.object({
     )
     .optional(),
   cartelaID: z.number().optional(),
+  userID: z.string().min(32).optional(),
   page: z
     .string()
     .refine((data) => !isNaN(Number(data)), {

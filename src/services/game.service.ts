@@ -65,6 +65,9 @@ export const findGame = async (
     await game.andWhere('games.date <= :endDate', {
       endDate: filters.end_date,
     });
+  if (filters?.userID) {
+    await game.andWhere('player.id=:playerID', { playerID: filters?.userID });
+  }
   let page: number = !Number.isNaN(parseInt(filters.page))
     ? parseInt(filters.page)
     : 1;
