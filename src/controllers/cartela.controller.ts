@@ -72,7 +72,6 @@ export const saveMultiple = expressAsyncHandler(
     const branch = res.locals.branch;
 
     for (let x = 0; x < cartela.board.length; x++) {
-      console.log(cartela.board[x]);
       if (!(await checkAddDuplicate(cartela.board[x], branch.id)))
         return res.status(302).json({
           status: false,

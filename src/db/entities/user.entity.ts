@@ -41,15 +41,15 @@ export class User {
   @Column({ default: true })
   status: Boolean;
 
-  @OneToOne(() => Token, (x) => x.token, { cascade: true })
+  @OneToOne(() => Token, (x) => x.token, { onDelete: 'CASCADE' })
   @JoinColumn()
   token: Token;
 
-  @ManyToOne(() => Branch, (branch) => branch.users)
+  @ManyToOne(() => Branch, (branch) => branch.users, { onDelete: 'CASCADE' })
   @JoinColumn()
   branch: Branch;
 
-  @OneToMany(() => Game, (game) => game.player, { cascade: true })
+  @OneToMany(() => Game, (game) => game.player, { onDelete: 'CASCADE' })
   @JoinColumn()
   games: Game[];
 }

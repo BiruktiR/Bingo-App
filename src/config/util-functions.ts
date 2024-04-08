@@ -122,6 +122,7 @@ export function reverseConvertBoolean(input: boolean[][]): InputBoolean {
   return result;
 }
 export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
+
   if (input == null) return null;
   const result: OutputMatchBoard = { B: [], I: [], N: [], G: [], O: [] };
   const maxLength = Math.max(...input.map((arr) => arr.length));
@@ -135,7 +136,7 @@ export function reverseMatchBoard(input: TMatch[][]): OutputMatchBoard {
       }
     }
   }
-
+ 
   return result;
 }
 export function guessTimezone(): string {
@@ -149,10 +150,75 @@ export function getMomentDate(date: string, type: string) {
       ? parsedDate.startOf('day')
       : parsedDate.endOf('day');
 
+  // const guessedOffset = moment.tz(currentTimezone).utcOffset();
+  // const hoursToSubtract = (guessedOffset - 180) / 60;
+  // return firstConversion
+  //   .clone()
+  //   .add(hoursToSubtract + guessedOffset / 60, 'hours')
+  //   .toDate();
+  return firstConversion.utc().toDate();
+}
+export function getUTCDate() {
+  return moment(new Date()).utc().toDate();
+}
+export function getEthiopianDate(date: Date) {
+  return moment(date).clone().add(3, 'hours').toDate();
+}
+export function getMomentStartEnd() {
+  let parsedDate = moment(new Date()).utc();
+
+  let currentTimezone = guessTimezone();
   const guessedOffset = moment.tz(currentTimezone).utcOffset();
-  const hoursToSubtract = (guessedOffset - 180) / 60;
-  return firstConversion
+  const hoursToSubtract = guessedOffset / 60;
+
+  let todayStart = parsedDate
+    .startOf('day')
     .clone()
-    .add(hoursToSubtract + guessedOffset / 60, 'hours')
-    .toDate();
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let todayEnd = parsedDate
+    .endOf('day')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let weekStart = parsedDate
+    .startOf('isoWeek')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let weekEnd = parsedDate
+    .endOf('isoWeek')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let monthStart = parsedDate
+    .startOf('month')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let monthEnd = parsedDate
+    .endOf('month')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let yearStart = parsedDate
+    .startOf('year')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  let yearEnd = parsedDate
+    .endOf('year')
+    .clone()
+    .subtract(hoursToSubtract, 'hours')
+    .format('YYYY-MM-DD HH:mm:ss');
+  return {
+    todayStart,
+    todayEnd,
+    weekStart,
+    weekEnd,
+    monthStart,
+    monthEnd,
+    yearStart,
+    yearEnd,
+  };
 }

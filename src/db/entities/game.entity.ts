@@ -26,7 +26,7 @@ export class Game {
   @Column({ type: 'double' })
   bet: number;
 
-  @ManyToOne(() => Branch, (branch) => branch.games)
+  @ManyToOne(() => Branch, (branch) => branch.games, { onDelete: 'CASCADE' })
   @JoinColumn()
   branch: Branch;
 
@@ -37,12 +37,12 @@ export class Game {
   type: number;
 
   @OneToMany(() => GameCartela, (game_cartela) => game_cartela.game, {
-    cascade: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   game_cartelas: GameCartela[];
 
-  @ManyToOne(() => User, (user) => user.games)
+  @ManyToOne(() => User, (user) => user.games, { onDelete: 'CASCADE' })
   @JoinColumn()
   player: User;
 }

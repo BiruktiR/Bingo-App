@@ -9,6 +9,7 @@ import {
 import { User } from './user.entity';
 import { Company } from './company.entity';
 import { Game } from './game.entity';
+import { Cartela } from './cartela.entity';
 
 @Entity('branches')
 export class Branch {
@@ -18,15 +19,23 @@ export class Branch {
   @Column()
   name: string;
 
-  @OneToMany(() => User, (user) => user.branch, { cascade: true })
+  @OneToMany(() => User, (user) => user.branch, { onDelete: 'CASCADE' })
   @JoinColumn()
   users: User[];
 
-  @ManyToOne(() => Company, (company) => company.branches)
+  @ManyToOne(() => Company, (company) => company.branches, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   company: Company;
 
-  @OneToMany(() => Game, (game) => game.branch, { cascade: true })
+  @OneToMany(() => Game, (game) => game.branch, { onDelete: 'CASCADE' })
   @JoinColumn()
   games: Game[];
+
+  @OneToMany(() => Cartela, (cartela) => cartela.branch, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  cartelas: Cartela[];
 }

@@ -14,7 +14,7 @@ export class Cartela {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Branch, (branch) => branch.company)
+  @ManyToOne(() => Branch, (branch) => branch.cartelas, { onDelete: 'CASCADE' })
   @JoinColumn()
   branch: Branch;
 
@@ -24,7 +24,7 @@ export class Cartela {
   board: string;
 
   @OneToMany(() => GameCartela, (game_cartela) => game_cartela.cartela, {
-    cascade: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   game_cartelas: GameCartela[];

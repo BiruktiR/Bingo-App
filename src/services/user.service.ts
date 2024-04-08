@@ -194,7 +194,7 @@ export const checkDuplicationUpdate = async (
       })
     )
     .getOne();
-  console.log('dafsdfasdf', user);
+ 
   return user == null ? false : true;
 };
 export const updateUser = async (user: TUser, id: string) => {

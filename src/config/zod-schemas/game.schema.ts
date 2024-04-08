@@ -8,14 +8,13 @@ export const MatrixSchema = z
   .refine(
     (matrix) => {
       // Check if there is at least one instance of 1 in the matrix
-      const oneFound = matrix.some((row) => row.includes(true));
+      // const oneFound = matrix.some((row) => row.includes(true));
       // Check if the middle center is always 0
       const middleCenter = matrix[2][2] === false;
-      return oneFound && middleCenter;
+      return middleCenter;
     },
     {
-      message:
-        'At least one instance true is required, and the middle center should always be false',
+      message: 'The middle center should always be false',
     }
   );
 // const patternRow = z
@@ -73,6 +72,7 @@ export const FindGameSchema: ZodSchema = z.object({
     )
     .optional(),
   cartelaID: z.number().optional(),
+  userID: z.string().min(32).optional(),
   page: z
     .string()
     .refine((data) => !isNaN(Number(data)), {

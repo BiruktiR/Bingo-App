@@ -26,7 +26,8 @@ export const login = expressAsyncHandler(
         status: 400,
         message: 'Username or password is incorrect',
       });
-    if (!isPasswordCorrect(loginData.password, user.password))
+
+    if (!(await isPasswordCorrect(loginData.password, user.password)))
       return res.status(400).json({
         status: 400,
         message: 'Username or password is incorrect',

@@ -20,4 +20,5 @@ export const AppDataSource = new DataSource({
   entities: [User, Token, Branch, Cartela, Company, Game, GameCartela],
   migrations: [],
   subscribers: [],
+  timezone: 'Z',
 });

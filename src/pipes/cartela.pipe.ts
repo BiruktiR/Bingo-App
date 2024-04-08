@@ -45,7 +45,7 @@ export const addMultipleCartelaPipe = expressAsyncHandler(
 
     if (req?.body?.board !== undefined && req?.body?.board !== null) {
       req.body.board = JSON.parse(req.body.board);
-      console.log(req.body.board);
+
       if (Array.isArray(req.body.board)) {
         for (let x = 0; x < req.body.board.length; x++) {
           if (req.body.board[x]?.N.length > 2) {
@@ -57,9 +57,9 @@ export const addMultipleCartelaPipe = expressAsyncHandler(
           //   }
           // }
           let board = req.body.board[x];
-          console.log('BEFORE', board);
+        
           req.body.board[x] = await convertData(board);
-          console.log('I AM CONVERTEEEEEEEEEED', req.body.board[x]);
+         
           // if (Array.isArray(req.body.board[x])) {
           //   req.body.board[x] = board.map((obj) => Object.values(obj));
           // }
