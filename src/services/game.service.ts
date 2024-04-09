@@ -1,5 +1,5 @@
 import { shuffle, range, slice, attempt, random } from 'lodash';
-import { RANDOM_TYPE, ROLES } from '../config/other-types/Enums';
+import { LANGUAGES, RANDOM_TYPE, ROLES } from '../config/other-types/Enums';
 import { Cartela } from '../db/entities/cartela.entity';
 import { Branch } from '../db/entities/branch.entity';
 import { User } from '../db/entities/user.entity';
@@ -7,7 +7,10 @@ import { Game } from '../db/entities/game.entity';
 import { AppDataSource } from '../db/data-source';
 import { GameCartela } from '../db/entities/game_cartela.entity';
 import { TFindGameSchema } from '../config/zod-schemas/game.schema';
-import { MetadataType } from '../config/other-types/metadata';
+import {
+  CustomizedRandomNumbers,
+  MetadataType,
+} from '../config/other-types/metadata';
 import { generateMetadata } from '../config/generate-metadata';
 import { TMatch } from '../config/other-types/match';
 import {
@@ -17,6 +20,7 @@ import {
   reverseConvertBoolean,
   reverseMatchBoard,
 } from '../config/util-functions';
+import { number } from 'zod';
 
 const gameRepository = AppDataSource.getRepository(Game);
 const gameCartelaRepository = AppDataSource.getRepository(GameCartela);
@@ -34,6 +38,34 @@ export const findRangeOfNumber = (number: number) => {
     value = 'O';
   }
   return value;
+};
+export const getCustomizedRandomNumbers = (numbers: number[]) => {
+  let data: CustomizedRandomNumbers[] = [];
+  for (let x = 0; x < numbers.length; x++) {
+    let numberRange = findRangeOfNumber(numbers[x]);
+    data.push({
+      value: numberRange + numbers[x],
+      amharic_url:
+        process.env.API_GATEWAY +
+        process.env.PORT_NUMBER +
+        process.env.API_EXTENSION +
+        'transcription/' +
+        LANGUAGES.amharic +
+        '/' +
+        numberRange.toLowerCase() +
+        +numbers[x],
+      oromiffa_url:
+        process.env.API_GATEWAY +
+        process.env.PORT_NUMBER +
+        process.env.API_EXTENSION +
+        'transcription/' +
+        LANGUAGES.oromiffa +
+        '/' +
+        numberRange.toLowerCase() +
+        +numbers[x],
+    });
+  }
+  return data;
 };
 export const findGame = async (
   role: string,
@@ -87,7 +119,9 @@ export const findGame = async (
       let percentageCut: number = initialEarning * ((data.type * 5) / 100);
       return {
         id: data.id,
-        called_numbers: JSON.parse(data.called_numbers),
+        called_numbers: getCustomizedRandomNumbers(
+          JSON.parse(data.called_numbers)
+        ),
         pattern: reverseConvertBoolean(JSON.parse(data.pattern)),
         bet: data.bet,
         branch: data.branch,

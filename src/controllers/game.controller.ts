@@ -25,6 +25,7 @@ import {
   findWinners,
   generateUniqueRandomNumbers,
   getBingoAttempts,
+  getCustomizedRandomNumbers,
   removeGame,
   updateGameCartela,
 } from '../services/game.service';
@@ -36,7 +37,7 @@ export const get = expressAsyncHandler(
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
- 
+
     if (filters?.start_date && res?.locals?.start_date) {
       filters.start_date = res.locals.start_date;
     }
@@ -77,6 +78,7 @@ export const getById = expressAsyncHandler(
       }
     }
     if (data !== null) {
+      data.called_numbers = getCustomizedRandomNumbers(data.called_numbers);
       data.game_cartelas.map((y) => {
         return {
           id: y.id,
@@ -163,6 +165,9 @@ export const add = expressAsyncHandler(
     // });
     let finalOutput = await findGameById(savedGame.id);
     if (finalOutput !== null) {
+      finalOutput.called_numbers = getCustomizedRandomNumbers(
+        finalOutput.called_numbers
+      );
       finalOutput.game_cartelas.map((y) => {
         return {
           id: y.id,
