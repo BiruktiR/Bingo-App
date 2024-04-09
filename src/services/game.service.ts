@@ -39,34 +39,34 @@ export const findRangeOfNumber = (number: number) => {
   }
   return value;
 };
-export const getCustomizedRandomNumbers = (numbers: number[]) => {
-  let data: CustomizedRandomNumbers[] = [];
-  for (let x = 0; x < numbers.length; x++) {
-    let numberRange = findRangeOfNumber(numbers[x]);
-    data.push({
-      value: numberRange + numbers[x],
-      amharic_url:
-        process.env.API_GATEWAY +
-        process.env.PORT_NUMBER +
-        process.env.API_EXTENSION +
-        'transcription/' +
-        LANGUAGES.amharic +
-        '/' +
-        numberRange.toLowerCase() +
-        +numbers[x],
-      oromiffa_url:
-        process.env.API_GATEWAY +
-        process.env.PORT_NUMBER +
-        process.env.API_EXTENSION +
-        'transcription/' +
-        LANGUAGES.oromiffa +
-        '/' +
-        numberRange.toLowerCase() +
-        +numbers[x],
-    });
-  }
-  return data;
-};
+// export const getCustomizedRandomNumbers = (numbers: number[]) => {
+//   let data: CustomizedRandomNumbers[] = [];
+//   for (let x = 0; x < numbers.length; x++) {
+//     let numberRange = findRangeOfNumber(numbers[x]);
+//     data.push({
+//       value: numberRange + numbers[x],
+//       amharic_url:
+//         process.env.API_GATEWAY +
+//         process.env.PORT_NUMBER +
+//         process.env.API_EXTENSION +
+//         'transcription/' +
+//         LANGUAGES.amharic +
+//         '/' +
+//         numberRange.toLowerCase() +
+//         +numbers[x],
+//       oromiffa_url:
+//         process.env.API_GATEWAY +
+//         process.env.PORT_NUMBER +
+//         process.env.API_EXTENSION +
+//         'transcription/' +
+//         LANGUAGES.oromiffa +
+//         '/' +
+//         numberRange.toLowerCase() +
+//         +numbers[x],
+//     });
+//   }
+//   return data;
+// };
 export const findGame = async (
   role: string,
   user: User,
@@ -119,9 +119,7 @@ export const findGame = async (
       let percentageCut: number = initialEarning * ((data.type * 5) / 100);
       return {
         id: data.id,
-        called_numbers: getCustomizedRandomNumbers(
-          JSON.parse(data.called_numbers)
-        ),
+        called_numbers: JSON.parse(data.called_numbers),
         pattern: reverseConvertBoolean(JSON.parse(data.pattern)),
         bet: data.bet,
         branch: data.branch,
