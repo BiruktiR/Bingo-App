@@ -67,6 +67,38 @@ export const findRangeOfNumber = (number: number) => {
 //   }
 //   return data;
 // };
+export const findWinners = (
+  array: {
+    id: string;
+    cartela: Cartela;
+    game: Game;
+    matched_board: any;
+    attempts: number;
+    is_fully_matched: boolean;
+  }[]
+) => {
+  let minSteps = Infinity;
+  let winners: {
+    id: string;
+    cartela: Cartela;
+    game: Game;
+    matched_board: any;
+    attempts: number;
+    is_fully_matched: boolean;
+  }[] = [];
+
+  array.forEach((obj) => {
+    if (obj.is_fully_matched && obj.attempts < minSteps) {
+      minSteps = obj.attempts;
+
+      winners = [obj];
+    } else if (obj.is_fully_matched && obj.attempts === minSteps) {
+      winners.push(obj);
+    }
+  });
+
+  return winners;
+};
 export const findGame = async (
   role: string,
   user: User,
@@ -117,6 +149,8 @@ export const findGame = async (
     data: (await game.getMany()).map((data) => {
       let initialEarning: number = data.bet * data.game_cartelas.length;
       let percentageCut: number = initialEarning * ((data.type * 5) / 100);
+      let winners = findWinners(data.game_cartelas);
+
       return {
         id: data.id,
         called_numbers: JSON.parse(data.called_numbers),
@@ -125,7 +159,10 @@ export const findGame = async (
         branch: data.branch,
         date: getEthiopianDate(data.date),
         type: data.type * 5,
-        game_cartelas: data.game_cartelas.map((y) => {
+        number_of_players: data.game_cartelas.length,
+        number_of_winners: winners.length,
+        steps: winners.length > 0 ? winners[0].attempts : 0,
+        winners: winners.map((y) => {
           return {
             id: y.id,
             cartela: y.cartela,
@@ -139,9 +176,9 @@ export const findGame = async (
           };
         }),
         player: data.player,
-        total_winning: initialEarning,
+        total_won: initialEarning,
         cut: percentageCut,
-        player_winning: initialEarning - percentageCut,
+        player_won: initialEarning - percentageCut,
       };
     }),
   };
@@ -301,38 +338,7 @@ export const addGameCartela = async (
   });
   await gameCartelaRepository.save(gameCartela);
 };
-export const findWinners = async (
-  array: {
-    id: string;
-    cartela: Cartela;
-    game: Game;
-    matched_board: any;
-    attempts: number;
-    is_fully_matched: boolean;
-  }[]
-) => {
-  let minSteps = Infinity;
-  let winners: {
-    id: string;
-    cartela: Cartela;
-    game: Game;
-    matched_board: any;
-    attempts: number;
-    is_fully_matched: boolean;
-  }[] = [];
 
-  array.forEach((obj) => {
-    if (obj.is_fully_matched && obj.attempts < minSteps) {
-      minSteps = obj.attempts;
-
-      winners = [obj];
-    } else if (obj.is_fully_matched && obj.attempts === minSteps) {
-      winners.push(obj);
-    }
-  });
-
-  return winners;
-};
 export const updateGameCartela = async (gameCartela: {
   id: string;
   cartela: Cartela;

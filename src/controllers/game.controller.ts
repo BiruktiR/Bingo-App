@@ -49,8 +49,8 @@ export const get = expressAsyncHandler(
       status: true,
       ...data,
       total_winnings: data.data.reduce((acc, obj) => {
-        if ('total_winning' in obj) {
-          acc += obj.total_winning;
+        if ('total_won' in obj) {
+          acc += obj.total_won;
         }
         return acc;
       }, 0),
