@@ -8,13 +8,13 @@ export const MatrixSchema = z
   .refine(
     (matrix) => {
       // Check if there is at least one instance of 1 in the matrix
-      // const oneFound = matrix.some((row) => row.includes(true));
+      const oneFound = matrix.some((row) => row.includes(true));
       // Check if the middle center is always 0
       const middleCenter = matrix[2][2] === false;
-      return middleCenter;
+      return oneFound && middleCenter;
     },
     {
-      message: 'The middle center should always be false',
+      message: 'At least one instance of true is required',
     }
   );
 // const patternRow = z

@@ -318,23 +318,19 @@ export const addGame = async (
   await gameRepository.save(game);
   return game;
 };
-export const addGameCartela = async (
-  game: Game,
-  cartela: Cartela,
-  indexArrayLength: number
-) => {
-  let matchboard: string = '';
-  if (indexArrayLength == 0) {
-    const board: number[] = JSON.parse(cartela.board).flat();
-    let matchBoard2d = await convertTo2DArray(await generateCustomBoard(board));
-    matchboard = JSON.stringify(matchBoard2d);
-  }
+export const addGameCartela = async (game: Game, cartela: Cartela) => {
+  // let matchboard: string = '';
+  // // if (indexArrayLength == 0) {
+  // //   const board: number[] = JSON.parse(cartela.board).flat();
+  // //   let matchBoard2d = await convertTo2DArray(await generateCustomBoard(board));
+  // //   matchboard = JSON.stringify(matchBoard2d);
+  // // }
   let gameCartela = gameCartelaRepository.create({
     cartela: cartela,
     game: game,
     attempts: 0,
-    matched_board: matchboard,
-    is_fully_matched: indexArrayLength == 0 ? true : false,
+    matched_board: '',
+    is_fully_matched: false,
   });
   await gameCartelaRepository.save(gameCartela);
 };

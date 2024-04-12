@@ -151,7 +151,7 @@ export const add = expressAsyncHandler(
     );
 
     for (let x = 0; x < cartela.length; x++) {
-      await addGameCartela(savedGame, cartela[x], indexArray.length);
+      await addGameCartela(savedGame, cartela[x]);
     }
     // cartela.forEach(async (x) => {
     //   // let { attempts, matchBoard } = await getBingoAttempts(
