@@ -7,6 +7,7 @@ export const validateSchema = (schema: ZodSchema, type: string) => {
   return expressAsyncHandler(
     async (req: Request, res: any, next: NextFunction) => {
       const data = type == validationType.body ? req.body : req.query;
+      console.log(data);
 
       const result = schema.safeParse(req.body);
       if (result?.success == false) {

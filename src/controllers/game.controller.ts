@@ -36,7 +36,7 @@ export const get = expressAsyncHandler(
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
- 
+
     if (filters?.start_date && res?.locals?.start_date) {
       filters.start_date = res.locals.start_date;
     }
@@ -49,8 +49,8 @@ export const get = expressAsyncHandler(
       status: true,
       ...data,
       total_winnings: data.data.reduce((acc, obj) => {
-        if ('total_winning' in obj) {
-          acc += obj.total_winning;
+        if ('total_won' in obj) {
+          acc += obj.total_won;
         }
         return acc;
       }, 0),

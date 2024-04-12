@@ -12,6 +12,7 @@ import { cartelaRouter } from './routes/cartela.route';
 import { gameRouter } from './routes/game.route';
 import { dashboardRouter } from './routes/dashboard.route';
 import { transcriptionRouter } from './routes/transcription.route';
+const { xss } = require('express-xss-sanitizer');
 config();
 const app: Application = express();
 
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(xss());
 
 AppDataSource.initialize()
   .then(async () => {

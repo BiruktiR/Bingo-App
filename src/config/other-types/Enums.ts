@@ -30,3 +30,7 @@ export enum DATE_TYPE {
   start = 'START',
   end = 'END',
 }
+export enum LANGUAGES {
+  amharic = 'amharic',
+  oromiffa = 'oromiffa',
+}

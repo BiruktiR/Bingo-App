@@ -39,3 +39,8 @@ export interface OutputMatchBoard {
   G: TMatch[];
   O: TMatch[];
 }
+export type CustomizedRandomNumbers = {
+  value: string;
+  amharic_url: string;
+  oromiffa_url: string;
+};
