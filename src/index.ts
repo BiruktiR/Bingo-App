@@ -2,16 +2,19 @@ import express, { Application } from 'express';
 import { config } from 'dotenv';
 import { AppDataSource } from './db/data-source';
 import cors from 'cors';
-import { authRouter } from './routes/auth.route';
-import { branchRouter } from './routes/branch.route';
-import { globalValidation } from './middlewares/global-exception.middleware';
-import { initializeSuperAdmin } from './services/user.service';
-import { companyRouter } from './routes/company.route';
-import { userRouter } from './routes/user.route';
-import { cartelaRouter } from './routes/cartela.route';
-import { gameRouter } from './routes/game.route';
-import { dashboardRouter } from './routes/dashboard.route';
-import { transcriptionRouter } from './routes/transcription.route';
+import { authRouter } from './modules/auth/auth.route';
+import { branchRouter } from './modules/branch/branch.route';
+import { globalValidation } from './config/global-utils/middlewares/global-exception.middleware';
+import { initializeSuperAdmin } from './modules/user/user.service';
+import { companyRouter } from './modules/company/company.route';
+import { userRouter } from './modules/user/user.route';
+import { cartelaRouter } from './modules/cartela/cartela.route';
+import { gameRouter } from './modules/game/game.route';
+import { dashboardRouter } from './modules/dashboard/dashboard.route';
+import { transcriptionRouter } from './modules/transcription/transcription.route';
+import { genUserCredit } from './modules/user-credit/user-credit.service';
+import { userCreditRouter } from './modules/user-credit/user-credit.route';
+import { notificationRouter } from './modules/notification/notification.route';
 const { xss } = require('express-xss-sanitizer');
 config();
 const app: Application = express();
@@ -30,6 +33,7 @@ AppDataSource.initialize()
   .then(async () => {
     console.log('Database is started successfully!');
     await initializeSuperAdmin();
+    await genUserCredit();
   })
   .catch((err: Error) => {
     console.error(err);
@@ -42,6 +46,8 @@ app.use('/api/cartela', cartelaRouter);
 app.use('/api/game', gameRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/transcription', transcriptionRouter);
+app.use('/api/user-credit', userCreditRouter);
+app.use('/api/notification', notificationRouter);
 
 app.use(globalValidation);
 app.listen(process.env.PORT_NUMBER, () => {

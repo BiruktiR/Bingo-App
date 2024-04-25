@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:${PORT_NUMBER}
+    volumes:
+      - .:/app
+      - '/app/node_modules'
+    depends_on:
+      - mysql_server
+
+  mysql_server:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DOCKER_DB_USERNAME}
+      - MYSQL_PASSWORD=${DOCKER_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DOCKER_DB_PASSWORD}
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: ${DOCKER_DB_HOST}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_DB_PASSWORD}
+    depends_on:
+      - mysql_server
