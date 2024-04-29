@@ -6,6 +6,7 @@ import { GUARD_TYPES } from '../../config/other-types/Enums';
 import { validationType } from '../../config/other-types/Enums';
 import { FindNotificationPipe } from './notification.pipe';
 import { FindNotificationSchema } from './notification.schema';
+import { getNotification } from './notification.controller';
 
 export const notificationRouter: Router = express.Router();
 
@@ -14,5 +15,6 @@ notificationRouter.get(
   validateToken,
   validateRole(GUARD_TYPES.all),
   FindNotificationPipe,
-  validateSchema(FindNotificationSchema, validationType.query)
+  validateSchema(FindNotificationSchema, validationType.query),
+  getNotification
 );

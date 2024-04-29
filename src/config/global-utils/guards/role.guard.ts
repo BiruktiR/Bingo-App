@@ -34,7 +34,7 @@ export const validateRole = (type: string) => {
           });
       } else if (type == GUARD_TYPES.adminCashier) {
         if (
-          res.locals.user.role !== ROLES.cashier ||
+          res.locals.user.role !== ROLES.cashier &&
           res.locals.user.role !== ROLES.admin
         )
           return res.status(401).json({

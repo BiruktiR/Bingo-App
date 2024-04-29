@@ -4,7 +4,7 @@ import { findNotification } from './notification.service';
 
 export const getNotification = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    let userID = req.params?.userID;
+    let userID = res.locals.user.id;
     let filters = req.query;
     if (filters?.start_date && res?.locals?.start_date) {
       filters.start_date = res.locals.start_date;

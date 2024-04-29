@@ -36,8 +36,10 @@ import { GameCartela } from '../../db/entities/game_cartela.entity';
 import { match } from 'assert';
 import {
   addNotification,
+  updateCredit,
   updateUserCredit,
 } from '../user-credit/user-credit.service';
+import { TAddCredit } from 'src/config/other-types/metadata';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -185,26 +187,20 @@ export const add = expressAsyncHandler(
     for (let x = 0; x < cartela.length; x++) {
       await addGameCartela(savedGame, cartela[x]);
     }
-    // cartela.forEach(async (x) => {
-    //   // let { attempts, matchBoard } = await getBingoAttempts(
-    //   //   indexArray,
-    //   //   randomNumbers,
-    //   //   x
-    //   // );
-    //   await addGameCartela(savedGame, x);
-    // });
+
     if (role !== ROLES.superAdmin) {
-      let currentCreditData = {
-        credit: 0,
-        percentage_cut: user.user_credit.percentage_cut,
-        current_credit:
+      const currentCreditData: TAddCredit = {
+        id: user.user_credit.id,
+        percentageCut: user.user_credit.percentage_cut,
+        credit: user.user_credit.credit,
+        currentCredit:
+          user.user_credit.current_credit -
           game.bet *
-          game.cartelas.length *
-          ((game.type * 5) / 100) *
-          user.user_credit.percentage_cut *
-          -1,
+            game.cartelas.length *
+            ((game.type * 5) / 100) *
+            user.user_credit.percentage_cut,
       };
-      await updateUserCredit(currentCreditData, user.user_credit);
+      await updateCredit(currentCreditData);
     }
 
     let finalOutput = await findGameById(savedGame.id);
@@ -381,15 +377,18 @@ export const disqualify = expressAsyncHandler(
     if (role !== ROLES.superAdmin) {
       let initialData =
         game.bet * ((game.type * 5) / 100) * user.user_credit.percentage_cut;
-      let currentCreditData = {
-        credit: 0,
-        percentage_cut: user.user_credit.percentage_cut,
-        current_credit:
-          initialData * game.game_cartelas.length -
-          initialData * game.game_cartelas.length -
-          1,
+
+      const currentCreditData: TAddCredit = {
+        id: user.user_credit.id,
+        percentageCut: user.user_credit.percentage_cut,
+        credit: user.user_credit.credit,
+        currentCredit:
+          user.user_credit.current_credit +
+          (initialData * game.game_cartelas.length -
+            initialData * game.game_cartelas.length -
+            1),
       };
-      await updateUserCredit(currentCreditData, user.user_credit);
+      await updateCredit(currentCreditData);
     }
     res.status(200).json({
       status: true,
@@ -415,16 +414,18 @@ export const deleteGame = expressAsyncHandler(
           message: 'Not allowed to delete game of other branch!',
         });
       }
-      let currentCreditData = {
-        credit: 0,
-        percentage_cut: user.user_credit.percentage_cut,
-        current_credit:
+      const currentCreditData: TAddCredit = {
+        id: user.user_credit.id,
+        percentageCut: user.user_credit.percentage_cut,
+        credit: user.user_credit.credit,
+        currentCredit:
+          user.user_credit.current_credit +
           game.bet *
-          game.game_cartelas.length *
-          ((game.type * 5) / 100) *
-          user.user_credit.percentage_cut,
+            game.game_cartelas.length *
+            ((game.type * 5) / 100) *
+            user.user_credit.percentage_cut,
       };
-      await updateUserCredit(currentCreditData, user.user_credit);
+      await updateCredit(currentCreditData);
     }
     await removeGame(gameID);
     res.status(200).json({

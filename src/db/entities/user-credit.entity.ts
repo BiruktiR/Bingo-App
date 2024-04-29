@@ -16,7 +16,7 @@ export class UserCredit {
   @Column({ type: 'double' })
   credit: number;
 
-  @Column()
+  @Column({ type: 'double' })
   percentage_cut: number;
 
   @Column({ type: 'double' })

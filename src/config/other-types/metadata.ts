@@ -44,3 +44,10 @@ export type CustomizedRandomNumbers = {
   amharic_url: string;
   oromiffa_url: string;
 };
+
+export type TAddCredit = {
+  id: string;
+  credit: number;
+  currentCredit: number;
+  percentageCut: number;
+};

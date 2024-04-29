@@ -26,5 +26,6 @@ export const FindNotificationPipe = expressAsyncHandler(
         req.query.end_date = parsedDate.toDate().toString();
       }
     }
+    next();
   }
 );

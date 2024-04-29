@@ -12,16 +12,19 @@ export const AddUserCreditPipe = expressAsyncHandler(
       req?.body?.percentage_cut !== null
     )
       req.body.percentage_cut = Number(req.body.percentage_cut);
+    next();
   }
 );
 export const TranferCreditPipe = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req?.body?.credit !== undefined && req?.body?.credit !== null)
       req.body.credit = parseInt(req.body.credit);
+    next();
   }
 );
 export const FindTransferHistoryPipe = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log('gg');
     if (
       req?.query?.start_date !== undefined &&
       req?.query?.start_date !== null
@@ -42,5 +45,6 @@ export const FindTransferHistoryPipe = expressAsyncHandler(
         req.query.end_date = parsedDate.toDate().toString();
       }
     }
+    next();
   }
 );

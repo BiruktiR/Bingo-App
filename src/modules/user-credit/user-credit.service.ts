@@ -7,7 +7,7 @@ import {
 } from './user-credit.schema';
 import { User } from '../../db/entities/user.entity';
 import { ROLES, TRANSFER_TYPE } from '../../config/other-types/Enums';
-import { MetadataType } from '../../config/other-types/metadata';
+import { MetadataType, TAddCredit } from '../../config/other-types/metadata';
 import { generateMetadata } from '../../config/util-functions/generate-metadata';
 import { TransferHistory } from '../../db/entities/transfer-history.entity';
 import {
@@ -153,16 +153,18 @@ export const addUserCredit = async (user: User) => {
   await userCreditRepository.save(user_credit);
   return user_credit;
 };
-export const updateUserCredit = async (
-  data: TAddUserCreditSchema,
-  previousData: UserCredit
-) => {
+export const updateUserCredit = async (data: any, previousData: UserCredit) => {
+  console.log('THIS IS DATA', data);
+  console.log('THIS IS SECOND DATA', previousData);
+  let credit = data.credit + previousData.credit;
+  let percentage_cut = data.percentage_cut;
+  let current_credit = previousData.current_credit + data.credit;
   await userCreditRepository.update(
     { id: previousData.id },
     {
-      credit: Number(data.credit) + previousData.credit,
-      percentage_cut: Number(data.percentage_cut),
-      current_credit: previousData.current_credit + Number(data.credit),
+      credit: credit,
+      percentage_cut: percentage_cut,
+      current_credit: current_credit,
     }
   );
 };
@@ -212,4 +214,27 @@ export const genUserCredit = async () => {
     let userCredit = await addUserCredit(users[x]);
     await registerCreditForExistingUser(users[x].id, userCredit);
   }
+};
+export const updateCredit = async (data: TAddCredit) => {
+  console.log(data);
+  await userCreditRepository
+    .createQueryBuilder()
+    .update(UserCredit)
+    .set({
+      credit: data.credit,
+      current_credit: data.currentCredit,
+      percentage_cut: data.percentageCut,
+    })
+    .where('id = :id', { id: data.id })
+    .execute();
+  // await userCreditRepository.update(
+  //   {
+  //     id: data.id,
+  //   },
+  //   {
+  //     credit: data.credit,
+  //     current_credit: data.currentCredit,
+  //     percentage_cut: data.percentageCut,
+  //   }
+  // );
 };

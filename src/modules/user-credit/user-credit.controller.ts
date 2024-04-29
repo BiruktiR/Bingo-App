@@ -14,9 +14,11 @@ import {
   findUserCreditById,
   generateNotificationMessage,
   transferUserCredit,
+  updateCredit,
   updateUserCredit,
 } from './user-credit.service';
 import { getUTCDate } from '../../config/util-functions/util-functions';
+import { TAddCredit } from 'src/config/other-types/metadata';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -64,6 +66,7 @@ export const addGameCredit = expressAsyncHandler(
 );
 export const findTransferHistory = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log('gg');
     let role = res.locals.user.role;
     let user = await findAllUsersById(res.locals.user.id);
     let filters = req.query;
@@ -75,6 +78,7 @@ export const findTransferHistory = expressAsyncHandler(
       filters.end_date = res.locals.end_date;
     }
     let data = await findTransfer(filters, role, user);
+    console.log(data);
     res.status(200).json({
       status: true,
       ...data,
@@ -112,12 +116,27 @@ export const transferCredit = expressAsyncHandler(
       user,
       sent_to_user
     );
-    let currentCreditData = {
-      credit: 0,
-      percentage_cut: user.user_credit.percentage_cut,
-      current_credit: transfer_credit * -1,
+    const currentCreditData: TAddCredit = {
+      id: user.user_credit.id,
+      credit: user.user_credit.credit,
+      currentCredit: user.user_credit.current_credit - transfer_credit,
+      percentageCut: user.user_credit.percentage_cut,
     };
-    await updateUserCredit(currentCreditData, user.user_credit);
+    const receivedCreditData: TAddCredit = {
+      id: sent_to_user.user_credit.id,
+      credit: sent_to_user.user_credit.credit,
+      currentCredit: sent_to_user.user_credit.current_credit + transfer_credit,
+      percentageCut: sent_to_user.user_credit.percentage_cut,
+    };
+
+    // let currentCreditData = {
+    //   credit: 0,
+    //   percentage_cut: user.user_credit.percentage_cut,
+    //   current_credit: transfer_credit * -1,
+    // };
+
+    await updateCredit(currentCreditData);
+    await updateCredit(receivedCreditData);
     if (user.user_credit.credit < 200)
       await addNotification(
         getUTCDate(),
@@ -147,5 +166,9 @@ export const transferCredit = expressAsyncHandler(
       sent_to_user,
       NOTIFICATION_TYPE.bankTransfer
     );
+    res.status(200).json({
+      status: true,
+      message: 'Credit is transferred successfully!',
+    });
   }
 );

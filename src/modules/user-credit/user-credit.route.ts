@@ -12,6 +12,7 @@ import {
 import {
   AddUserCreditSchema,
   FindTransferHistorySchema,
+  FindUserCreditSchema,
   TransferCreditSchema,
 } from './user-credit.schema';
 import {
@@ -27,9 +28,17 @@ userCreditRouter.get(
   '',
   validateToken,
   validateRole(GUARD_TYPES.superAdminAndAdmin),
+  validateSchema(FindUserCreditSchema, validationType.query),
   get
 );
-
+userCreditRouter.get(
+  '/transfer-history',
+  validateToken,
+  validateRole(GUARD_TYPES.all),
+  FindTransferHistoryPipe,
+  validateSchema(FindTransferHistorySchema, validationType.query),
+  findTransferHistory
+);
 userCreditRouter.get(
   '/:userCreditID',
   validateToken,
