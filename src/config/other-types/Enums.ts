@@ -21,6 +21,7 @@ export enum GUARD_TYPES {
   superAdmin = 'SUPER_ADMIN',
   superAdminAndAdmin = 'SUPER_ADMIN_AND_ADMIN',
   all = 'ALL',
+  adminCashier = 'ADMIN_CASHIER',
 }
 export enum RANDOM_TYPE {
   raw = 'RAW',
@@ -33,4 +34,12 @@ export enum DATE_TYPE {
 export enum LANGUAGES {
   amharic = 'amharic',
   oromiffa = 'oromiffa',
+}
+export enum TRANSFER_TYPE {
+  sender = 'sender',
+  receiver = 'receiver',
+}
+export enum NOTIFICATION_TYPE {
+  alert = 'Alert',
+  bankTransfer = 'Bank Transfer',
 }

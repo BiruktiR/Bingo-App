@@ -12,6 +12,9 @@ import {
 import { Token } from './token.entity';
 import { Branch } from './branch.entity';
 import { Game } from './game.entity';
+import { UserCredit } from './user-credit.entity';
+import { TransferHistory } from './transfer-history.entity';
+import { Notification } from './notification.entity';
 
 @Entity('users')
 export class User {
@@ -41,7 +44,7 @@ export class User {
   @Column({ default: true })
   status: Boolean;
 
-  @OneToOne(() => Token, (x) => x.token, { onDelete: 'CASCADE' })
+  @OneToOne(() => Token, { onDelete: 'CASCADE' })
   @JoinColumn()
   token: Token;
 
@@ -52,4 +55,19 @@ export class User {
   @OneToMany(() => Game, (game) => game.player, { onDelete: 'CASCADE' })
   @JoinColumn()
   games: Game[];
+
+  @OneToOne(() => UserCredit, (credit) => credit.user, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user_credit: UserCredit;
+
+  @OneToMany(() => TransferHistory, (x) => x.sender, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  senders: TransferHistory[];
+  @OneToMany(() => TransferHistory, (x) => x.receiver, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  receivers: TransferHistory[];
+
+  @OneToMany(() => Notification, (x) => x.user, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  notifications: Notification[];
 }
