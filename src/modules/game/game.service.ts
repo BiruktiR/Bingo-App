@@ -1,26 +1,20 @@
-import { shuffle, range, slice, attempt, random } from 'lodash';
-import { LANGUAGES, RANDOM_TYPE, ROLES } from '../../config/other-types/Enums';
-import { Cartela } from '../../db/entities/cartela.entity';
-import { Branch } from '../../db/entities/branch.entity';
-import { User } from '../../db/entities/user.entity';
-import { Game } from '../../db/entities/game.entity';
-import { AppDataSource } from '../../db/data-source';
-import { GameCartela } from '../../db/entities/game_cartela.entity';
-import { TFindGameSchema } from './game.schema';
-import {
-  CustomizedRandomNumbers,
-  MetadataType,
-} from '../../config/other-types/metadata';
+import { range, shuffle } from 'lodash';
+import { RANDOM_TYPE, ROLES } from '../../config/other-types/Enums';
+import { MetadataType } from '../../config/other-types/metadata';
 import { generateMetadata } from '../../config/util-functions/generate-metadata';
-import { TMatch } from '../../config/other-types/match';
 import {
   convertTo2DArray,
-  convertToBingoArray,
   getEthiopianDate,
   reverseConvertBoolean,
   reverseMatchBoard,
 } from '../../config/util-functions/util-functions';
-import { number } from 'zod';
+import { AppDataSource } from '../../db/data-source';
+import { Branch } from '../../db/entities/branch.entity';
+import { Cartela } from '../../db/entities/cartela.entity';
+import { Game } from '../../db/entities/game.entity';
+import { GameCartela } from '../../db/entities/game_cartela.entity';
+import { User } from '../../db/entities/user.entity';
+import { TFindGameSchema } from './game.schema';
 
 const gameRepository = AppDataSource.getRepository(Game);
 const gameCartelaRepository = AppDataSource.getRepository(GameCartela);
@@ -271,11 +265,13 @@ export const getBingoAttempts = async (
 
   let attempts: number = 0;
   let numberOfPatternsMatched: number = 0;
+
   for (let x = 0; x < steps; x++) {
     let index = board.indexOf(randomNumbers[x]);
 
-    if (index == -1 && numberOfPatternsMatched < indexArray.length - 1) {
+    if (index == -1 && numberOfPatternsMatched < indexArray.length) {
       attempts++;
+
       continue;
     } else if (index !== -1) {
       matchBoard[index].isMatched = true;
@@ -283,7 +279,7 @@ export const getBingoAttempts = async (
         numberOfPatternsMatched++;
         if (numberOfPatternsMatched == indexArray.length) {
           isFullyMatched = true;
-          x = randomNumbers.length + 1;
+          x = steps + 1;
         }
       }
     }

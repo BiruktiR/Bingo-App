@@ -1,24 +1,27 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { TGameSchema } from './game.schema';
+import { TAddCredit } from 'src/config/other-types/metadata';
 import {
   NOTIFICATION_TYPE,
   RANDOM_TYPE,
   ROLES,
 } from '../../config/other-types/Enums';
-import { findAllUsersById } from '../user/user.service';
-import { findById } from '../branch/branch.service';
-import { Cartela } from '../../db/entities/cartela.entity';
-import { findCartelaById } from '../cartela/cartela.service';
 import {
-  convertToBingoArray,
   findIndexesOfNumber,
-  getDate,
-  getEthiopianDate,
   getUTCDate,
   reverseConvertBoolean,
   reverseMatchBoard,
 } from '../../config/util-functions/util-functions';
+import { Cartela } from '../../db/entities/cartela.entity';
+import { GameCartela } from '../../db/entities/game_cartela.entity';
+import { findById } from '../branch/branch.service';
+import { findCartelaById } from '../cartela/cartela.service';
+import {
+  addNotification,
+  updateCredit,
+} from '../user-credit/user-credit.service';
+import { findAllUsersById } from '../user/user.service';
+import { TGameSchema } from './game.schema';
 import {
   addGame,
   addGameCartela,
@@ -32,14 +35,6 @@ import {
   removeGame,
   updateGameCartela,
 } from './game.service';
-import { GameCartela } from '../../db/entities/game_cartela.entity';
-import { match } from 'assert';
-import {
-  addNotification,
-  updateCredit,
-  updateUserCredit,
-} from '../user-credit/user-credit.service';
-import { TAddCredit } from 'src/config/other-types/metadata';
 
 export const get = expressAsyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -290,6 +285,25 @@ export const checkWinner = expressAsyncHandler(
         game.game_cartelas[x].attempts = attempts;
         game.game_cartelas[x].matched_board = matchBoard;
         game.game_cartelas[x].is_fully_matched = isFullyMatched;
+      }
+      let winners = await findWinners(game.game_cartelas);
+      if (winners.length > 0) {
+        for (let y = 0; y < game.game_cartelas.length; y++) {
+          if (
+            !winners.some((winner) => winner.id === game.game_cartelas[y].id)
+          ) {
+            let { attempts, matchBoard, isFullyMatched } =
+              await getBingoAttempts(
+                indexArray,
+                game.called_numbers,
+                game.game_cartelas[y].cartela,
+                winners[0].attempts
+              );
+            game.game_cartelas[y].attempts = attempts;
+            game.game_cartelas[y].matched_board = matchBoard;
+            game.game_cartelas[y].is_fully_matched = isFullyMatched;
+          }
+        }
       }
     }
     let winners = await findWinners(game.game_cartelas);
